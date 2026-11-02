@@ -98,6 +98,8 @@ The workflow reports; it does not block on its own. What blocks is `main`'s bran
 
 Binding the checks to the GitHub Actions app stops any other integration from reporting a passing check under the same name. Admin enforcement is what makes the rest hold: without it, a maintainer's direct push to `main` is stopped only by the `pre-push` hook, which `--no-verify` skips.
 
+Turn on "Automatically delete head branches" in the repository's general settings too; it is available on every plan. Deleting a merged branch is what makes GitHub retarget a pull request built on it to that branch's own base. With the branch left behind, the next pull request merges into it and never reaches `main`.
+
 <!-- project:start -->
 
 <!-- The project's actual branch protection, if it differs from the recommendation above, and why: required reviews, extra required checks, up-to-date branches. Leave empty when it matches. -->
