@@ -177,6 +177,8 @@ Keep a pull request to one subject. A branch that fixes a bug and also restructu
 
 A pull request that resolves an issue says `Fixes #123` in its description, so merging it closes the issue.
 
+A pull request that builds on another unmerged one targets that one's branch and names it in its description. Merge them in order, the base first. GitHub then deletes the merged branch, with the setting [CI](docs/ci.md#branch-protection) recommends, and retargets the next pull request to `main`; merged out of order or before that retarget, it lands in the other branch instead of `main`.
+
 ## Releasing
 
 Releasing is a maintainer action, and it is separate from merging. Merging changes `main`; a release puts a version where people install or reach it, and a published version can be superseded but rarely taken back.
