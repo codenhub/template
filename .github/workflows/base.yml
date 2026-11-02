@@ -1,0 +1,26 @@
+name: Base
+
+# Fails a pull request whose base is not `main`. A stacked pull request merged while its base still points at
+# the branch it builds on lands in that branch instead of `main`, and nothing else reports it
+# (CONTRIBUTING.md, "Stacked pull requests"). `edited` runs the check again when the base is changed.
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
+
+permissions: {}
+
+jobs:
+  base:
+    name: Base is main
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Base is main
+        env:
+          BASE: ${{ github.base_ref }}
+        run: |
+          if [ "$BASE" != "main" ]; then
+            echo "::error::This pull request targets \`$BASE\`, not \`main\`. Retarget it to \`main\` once the pull request it builds on merges."
+            exit 1
+          fi
+        shell: bash

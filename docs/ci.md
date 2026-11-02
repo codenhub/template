@@ -37,11 +37,14 @@ Workspace setup, pnpm, Node.js and a `--frozen-lockfile` install, lives in the c
 
 ## The workflow
 
-| Job      | Runner          | Runs                                                 |
-| -------- | --------------- | ---------------------------------------------------- |
-| `Verify` | `ubuntu-latest` | `pnpm verify`, then the `Working tree is clean` step |
+| Job            | Runner          | Runs                                                 |
+| -------------- | --------------- | ---------------------------------------------------- |
+| `Verify`       | `ubuntu-latest` | `pnpm verify`, then the `Working tree is clean` step |
+| `Base is main` | `ubuntu-latest` | Fails a pull request whose base is not `main`        |
 
 There is no change-based selection: every run checks the whole workspace. A check that skips part of the workspace on a pull request lets that part reach `main` unverified, and a selection has to be maintained and can be wrong in ways a green run hides. A project whose full run grows too slow to wait for adds selection then, with the merge into `main` still checking everything.
+
+`Base is main` lives in its own workflow, `base.yml`, because it also runs when a pull request is edited, which is how a change of base arrives, and `pnpm verify` should not rerun for a new title. It needs no token permissions at all. [Contributing](../CONTRIBUTING.md#stacked-pull-requests) explains the mistake it catches.
 
 `Working tree is clean` fails when a check has left a tracked or untracked file changed. A check that writes has changed what it was checking, so it is reported rather than passing.
 
@@ -89,12 +92,12 @@ The groups take minor and patch updates only, so a week is one grouped pull requ
 
 The workflow reports; it does not block on its own. What blocks is `main`'s branch protection on GitHub, a repository setting no file here can enforce. The recommended configuration:
 
-| Setting                | Value                                 |
-| ---------------------- | ------------------------------------- |
-| Required status checks | `Verify`, from the GitHub Actions app |
-| Pull request required  | Yes                                   |
-| Enforced for admins    | Yes                                   |
-| Force pushes, deletion | Refused                               |
+| Setting                | Value                                                    |
+| ---------------------- | -------------------------------------------------------- |
+| Required status checks | `Verify` and `Base is main`, from the GitHub Actions app |
+| Pull request required  | Yes                                                      |
+| Enforced for admins    | Yes                                                      |
+| Force pushes, deletion | Refused                                                  |
 
 Binding the checks to the GitHub Actions app stops any other integration from reporting a passing check under the same name. Admin enforcement is what makes the rest hold: without it, a maintainer's direct push to `main` is stopped only by the `pre-push` hook, which `--no-verify` skips.
 

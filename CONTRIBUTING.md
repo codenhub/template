@@ -177,6 +177,12 @@ Keep a pull request to one subject. A branch that fixes a bug and also restructu
 
 A pull request that resolves an issue says `Fixes #123` in its description, so merging it closes the issue.
 
+### Stacked pull requests
+
+A pull request that builds on another one's unmerged branch is stacked: its base is that branch, not `main`. It opens as a draft and names the pull request it waits for. Once that one merges, retarget it to `main`, then mark it ready.
+
+Merged while its base still points at the other branch, its commits land in that branch instead of `main`, and the merge looks like any other. GitHub retargets a stacked pull request only when it deletes the merged branch, which it does not always do, so do not rely on it. The `Base is main` check fails until the pull request targets `main`, so a stacked one that was missed shows red.
+
 ## Releasing
 
 Releasing is a maintainer action, and it is separate from merging. Merging changes `main`; a release puts a version where people install or reach it, and a published version can be superseded but rarely taken back.

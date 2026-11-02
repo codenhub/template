@@ -16,6 +16,7 @@
     ".github/dependabot.yml": "seed",
     ".github/labels.json": "seed",
     ".github/pull_request_template.md": "blocks",
+    ".github/workflows/base.yml": "canonical",
     ".github/workflows/ci.yml": "canonical",
     ".gitignore": "blocks",
     ".npmrc": "canonical",
