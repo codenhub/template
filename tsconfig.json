@@ -1,0 +1,7 @@
+{
+  // The solution: `pnpm typecheck` runs `tsc -b` here, which checks every project below. It holds no files of
+  // its own, because a project that references others type-checks against their emitted declarations, and
+  // these projects emit nothing. A new package or app extends tsconfig.base.json and adds its path here.
+  "files": [],
+  "references": [{ "path": "./tsconfig.root.json" }]
+}

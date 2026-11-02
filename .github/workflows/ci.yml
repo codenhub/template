@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A pull request pushed to again abandons the run it superseded; `main` keeps every run, because each merge
+# is the authoritative check of a commit.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up the workspace
+        uses: ./.github/actions/setup
+
+      # The same command a contributor runs: format, lint, typecheck, test and build, stopping at the first
+      # failure. A step only CI can run is a step nobody can reproduce before pushing.
+      - name: Verify
+        run: pnpm verify
+
+      # A check that writes a file has changed what it was checking, so the run fails. `--untracked-files=all`
+      # lists a new file, not only the directory that holds it.
+      - name: Working tree is clean
+        run: |
+          changes="$(git status --porcelain --untracked-files=all)"
+          if [ -n "$changes" ]; then
+            echo "$changes"
+            echo "::error::A check left the working tree changed."
+            exit 1
+          fi
+        shell: bash

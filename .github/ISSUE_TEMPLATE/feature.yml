@@ -1,0 +1,34 @@
+name: Feature
+description: Something that should work and does not today, or a change to how it works.
+labels: ["type:feature", "status:needs-triage"]
+body:
+  - type: input
+    id: area
+    attributes:
+      label: Area
+      description: The package or app it belongs in, if you know.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What you are trying to do, and what gets in the way.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: The API or behavior you have in mind, if any.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives
+      description: What you tried or considered instead.
+  - type: textarea
+    id: contracts
+    attributes:
+      label: Contracts touched
+      description: Which public APIs, options, defaults, limits, or persisted formats the proposal adds or changes, if any, and why each is needed.
+  # project:start
+  # Fields this project's triage needs, such as the invariants a proposal affects. Delete this comment when adding them, or leave the block empty.
+  # project:end

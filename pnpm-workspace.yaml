@@ -1,0 +1,28 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Every version is declared once, here, and packages refer to it as `catalog:`, so the workspace can never
+# hold two versions of one dependency by accident. A new third-party dependency adds its version here.
+catalog:
+  "@vitest/coverage-v8": ^5.0.5
+  oxfmt: ^0.74.0
+  oxlint: ^1.89.0
+  prettier: ^3.9.10
+  typescript: ^7.0.2
+  vitest: ^5.0.5
+
+# Supply-chain rules, applied to every install, local and in CI alike (docs/ci.md, "Dependency installs").
+# Refuses a transitive dependency that resolves to a git repository or a tarball URL instead of the registry.
+blockExoticSubdeps: true
+# Refuses a version published with weaker trust evidence (provenance, trusted publishing) than an earlier
+# version of the same package, a common sign of a compromised publish.
+trustPolicy: no-downgrade
+# Seven days, in minutes: a version published longer ago than this is no longer held to the trust policy, so
+# a long-standing release that predates provenance is not refused as a downgrade.
+trustPolicyIgnoreAfter: 10080
+# The only dependencies whose install scripts may run. The template's tooling needs none: oxfmt, oxlint,
+# TypeScript and Vitest ship their native binaries as optional dependencies. A dependency that needs one gets
+# an entry in the same change, with the reason in a comment, as `esbuild: true` for a package that fetches
+# its binary on install.
+allowBuilds: {}

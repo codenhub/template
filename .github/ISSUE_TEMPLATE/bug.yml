@@ -1,0 +1,49 @@
+name: Bug
+description: Something does not behave the way its documentation says.
+labels: ["type:bug", "status:needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A security vulnerability is not a bug report. Report it privately, as SECURITY.md describes.
+
+        This issue is public. Remove secrets, tokens, and personal data from everything you write or paste below.
+  - type: input
+    id: area
+    attributes:
+      label: Area
+      description: The package or app it is in, if you know.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The released version, or the commit from `git rev-parse --short HEAD` when running from a checkout.
+    validations:
+      required: true
+  # project:start
+  # Fields this project's triage needs, such as a runtime or platform dropdown. Delete this comment when adding them, or leave the block empty.
+  # project:end
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: The smallest code or the shortest steps that show it.
+    validations:
+      required: true
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Workaround in place
+      description: What you did to keep going, and where, so it can be removed once this is fixed.

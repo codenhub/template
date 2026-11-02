@@ -1,0 +1,8 @@
+{
+  // The repository's own TypeScript outside the workspace packages: the root config files and `scripts/`.
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.cache/tsconfig.root.tsbuildinfo"
+  },
+  "include": ["*.ts", "scripts/**/*.ts"]
+}

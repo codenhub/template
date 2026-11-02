@@ -1,0 +1,39 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependencies
+node_modules
+
+# Build output and caches
+dist
+coverage
+*.tsbuildinfo
+test-results
+playwright-report
+
+# Local environment and credentials; an example file is committed instead.
+.env
+.env.*
+!.env.example
+
+# AI agents: local settings, sessions, and worktrees.
+.agents
+.antigravity
+.claude
+.codex
+.cursor
+.gemini
+.opencode
+
+# Short-lived plans (docs/guidelines/documentation.md, "What belongs here").
+docs/plans
+
+# project:start
+# Project-specific ignores: framework caches (`.astro`, `.wrangler`), native build
+# output (`target`), local data (`*.db`), generated copies of shared assets.
+# project:end
