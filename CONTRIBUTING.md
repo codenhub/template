@@ -153,7 +153,7 @@ The human directing the work stays the commit author. The trailer is an addition
 
 ## Validation
 
-Run scripts from the repository root. During development, narrow checks to what changed, such as `pnpm test <file>`; [tooling](docs/tooling.md) lists the commands and how to narrow them. Before delivering a change, run the whole gate:
+Run scripts from the repository root. During development, narrow checks to what changed; [tooling](docs/tooling.md) lists the commands and how to narrow them. Before delivering a change, run the gate the block below names; by default, that is the whole gate:
 
 ```sh
 pnpm verify
@@ -163,7 +163,7 @@ It runs formatting, linting, the build, type checking, and tests, the same check
 
 <!-- project:start -->
 
-<!-- Checks `pnpm verify` does not run and when to run them, such as browser suites, or a check for a generated file. Leave the block empty when there are none. -->
+<!-- The gate before delivering a change when it is not plain `pnpm verify`, such as a run narrowed to changed packages that CI completes, and checks `pnpm verify` does not run and when to run them, such as browser suites or a check for a generated file. Leave the block empty when there are none. -->
 
 <!-- project:end -->
 
