@@ -39,13 +39,7 @@ Name by domain intent. Avoid names that say only the type or the mechanism, such
 
 ### Fix it upstream
 
-When a dependency the project or its owner maintains lacks something or gets it wrong, the fix goes upstream, and the project takes it from a release. A local workaround is temporary and is marked with the upstream issue it waits on:
-
-```ts
-// Workaround for <owner>/<repo>#123: <what it works around>.
-```
-
-Searching for the issue reference then finds every workaround to remove once the fix ships. A third-party dependency gets the same treatment where the project reports the problem upstream.
+When a dependency lacks something or gets it wrong, the fix goes upstream where the project can report it, and the project takes it from a release. A local workaround is temporary and names the issue it waits on, as [a defect found mid-task](../../CONTRIBUTING.md#a-defect-found-mid-task) describes. That holds for a third-party dependency as much as for one the project or its owner maintains; only the latter is fixed upstream by the project itself.
 
 ## Code
 
