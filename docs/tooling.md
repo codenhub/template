@@ -21,10 +21,10 @@ Every script runs from the repository root. There is no workspace CLI: the scrip
 | `pnpm test:watch`    | The same, in watch mode.                                                                                     |
 | `pnpm test:coverage` | The same, with a V8 coverage report in `coverage/`.                                                          |
 | `pnpm build`         | Every workspace package's `build` script, in dependency order. A package without one is skipped.             |
-| `pnpm verify`        | `format:check`, `lint:check`, `typecheck`, `test` and `build`, in that order, stopping at the first failure. |
+| `pnpm verify`        | `format:check`, `lint:check`, `build`, `typecheck` and `test`, in that order, stopping at the first failure. |
 | `pnpm prepare`       | Runs on install: points git at the committed hooks in `.githooks/`.                                          |
 
-`pnpm verify` is what CI runs ([CI](ci.md)), so a green local `verify` predicts a green run. The order puts the cheapest checks first: a formatting slip is reported in a second instead of after the tests.
+`pnpm verify` is what CI runs ([CI](ci.md)), so a green local `verify` predicts a green run. The order puts the cheapest checks first, so a formatting slip is reported in a second instead of after the tests. The build comes before type checking and tests because a package that imports another workspace package resolves it through that package's `exports`, which for a built package point at `dist/`: on a fresh clone, as in CI, `tsc -b` and Vitest run before the build cannot resolve the import and fail.
 
 A script that only some projects need, such as `dev` or an end-to-end suite, is the project's to add. Keep the names above as they are: CI, the git hooks and the agent instructions call them by name.
 
