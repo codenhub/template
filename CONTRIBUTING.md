@@ -117,7 +117,7 @@ One of `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `rever
 
 ### Scope
 
-The area the change lands in, and optional. For a workspace package it is the package name without its npm scope. For an app it is the directory name under `apps/`. Repository-level areas use their own name, such as `ci`, `deps`, or `docs`. Leave it out when the change spans several.
+The area the change lands in, and optional. For a workspace package it is the package name without its npm scope; for a package nested a level deeper, such as `packages/plugins/vite`, it is the path under `packages/`, as in `plugins/vite`. For an app it is the directory name under `apps/`. Repository-level areas use their own name, such as `ci`, `deps`, or `docs`. Leave it out when the change spans several.
 
 ### Subject
 
