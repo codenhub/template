@@ -30,7 +30,7 @@ Manual usage scenarios, such as a playground used during development, are outsid
 ### Unit tests
 
 - A test file is named after the file it covers: `store.ts` is tested by `store.test.ts`.
-- Mock only real boundaries: the network, storage, databases, the filesystem, timers, and browser globals. Pure logic is tested directly.
+- What to mock, and what to test against real temporary state instead, is owned by the [coding guidelines](../guidelines/code.md#testing).
 - Do not import test utilities across distant packages, except from a package or subpath that exists to share them.
 
 ### Integration tests
