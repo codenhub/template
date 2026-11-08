@@ -93,13 +93,13 @@ Renovate does the same job, and was rejected: it runs as a GitHub App with a con
 
 ## Branch protection
 
-The workflow reports; it does not block on its own. What blocks is `main`'s branch protection on GitHub, a repository setting no file here can enforce. The recommended configuration:
+The workflow reports; it does not block on its own. What blocks is a branch protection rule or a ruleset on `main`, repository settings no file here can enforce. A ruleset does the same job with more control, and either works if nobody can bypass it. The recommended configuration:
 
 | Setting                | Value                                 |
 | ---------------------- | ------------------------------------- |
 | Required status checks | `Verify`, from the GitHub Actions app |
 | Pull request required  | Yes                                   |
-| Enforced for admins    | Yes                                   |
+| Enforced for admins    | Yes, with no bypass actors            |
 | Force pushes, deletion | Refused                               |
 
 Binding the checks to the GitHub Actions app stops any other integration from reporting a passing check under the same name. Admin enforcement is what makes the rest hold: without it, a maintainer's direct push to `main` is stopped only by the `pre-push` hook, which `--no-verify` skips.
@@ -112,7 +112,7 @@ Turn on "Automatically delete head branches" in the repository's general setting
 
 <!-- project:end -->
 
-## Not covered
+## Other workflows
 
 The template's CI verifies; it does not deploy, release or publish. A project that does adds a workflow of its own and documents it here.
 
