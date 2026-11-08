@@ -9,8 +9,3 @@
 **/coverage/
 **/test-results/
 **/playwright-report/
-
-# project:start
-# Project paths inside the Markdown set to leave alone, such as vendored or
-# generated Markdown kept byte-for-byte, each with a comment saying why.
-# project:end

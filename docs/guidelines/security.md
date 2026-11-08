@@ -8,11 +8,7 @@ scope: How code keeps the project's security commitments, for anyone writing or 
 
 This document says how code handles secrets, untrusted input, and what leaves the process, so the same problem is solved the same way everywhere. Vulnerabilities are reported as [SECURITY.md](../../SECURITY.md) describes, never in a public issue.
 
-<!-- project:start -->
-
 <!-- What the project protects and from whom: its trust boundary in a sentence or two, and the document that states what must hold (for example an architecture document or a spec of security invariants). Say that where that document and this one disagree, that document wins and this one is fixed. -->
-
-<!-- project:end -->
 
 ## Secrets
 
@@ -58,11 +54,7 @@ When the project serves web requests:
 - The project calls only services it needs for the feature at hand, or that its operator configured. No telemetry, update checks, or third-party lookups without a recorded decision and, where users are affected, a way to turn them off.
 - Every dependency is a trust decision. The rule in [Coding guidelines](code.md#architecture-and-design) on adding dependencies applies with extra force to anything that runs at install time or handles secrets.
 
-<!-- project:start -->
-
 <!-- Domain rules: how this project's own boundaries are kept in code, one section per concern (for example permissions and capabilities, IPC commands, injected scripts, sessions, audit entries). Link each rule to the spec or test that enforces it. -->
-
-<!-- project:end -->
 
 ## Reviewing a change
 
@@ -74,8 +66,4 @@ A change that touches any of the above names it in its pull request and adds or 
 - Does it add a permission, capability, endpoint, or outbound call? Is that named in the pull request and tested?
 - Does it read a file a user can edit, and check what it reads?
 
-<!-- project:start -->
-
-<!-- Review questions specific to this project's boundaries. Leave empty when there are none. -->
-
-<!-- project:end -->
+<!-- Review questions specific to this project's boundaries. -->

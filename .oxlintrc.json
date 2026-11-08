@@ -1,24 +1,12 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "ignorePatterns": [
-    // project:start
-    // Project patterns. Blocks open their list so the template's last entry keeps no trailing comma.
-    // project:end
-    "**/dist/**",
-    "**/coverage/**",
-    "**/test-results/**",
-    "**/playwright-report/**"
-  ],
+  "ignorePatterns": ["**/dist/**", "**/coverage/**", "**/test-results/**", "**/playwright-report/**"],
   "env": {
     "browser": true,
     "node": true
   },
   "plugins": ["typescript", "oxc", "jsdoc", "unicorn", "promise", "vitest"],
   "rules": {
-    // project:start
-    // Rules the template does not set. A later duplicate key wins, so a rule the template sets
-    // changes in the template.
-    // project:end
     "curly": ["error", "all"],
     "eqeqeq": ["error", "always"],
     "jsdoc/check-access": "error",
@@ -48,10 +36,6 @@
     "vitest/require-mock-type-parameters": "off"
   },
   "overrides": [
-    // project:start
-    // Project overrides, such as console output in a CLI's entry files. A later override wins, so
-    // the template's overrides below take precedence where both set the same rule.
-    // project:end
     {
       "files": [".githooks/**", "**/scripts/**", "**/*.test.ts", "**/*.test.tsx"],
       "rules": {

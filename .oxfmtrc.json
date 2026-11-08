@@ -1,15 +1,9 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
-  // project:start
-  // Options the template does not set, such as `sortTailwindcss`. Blocks open their list so the
-  // template's last entry keeps no trailing comma.
-  // project:end
   "bracketSpacing": true,
   "htmlWhitespaceSensitivity": "ignore",
   "ignorePatterns": [
-    // project:start
     // Committed paths to leave unformatted. oxfmt already skips what .gitignore and .prettierignore list.
-    // project:end
     "**/*.md"
   ],
   "printWidth": 120,

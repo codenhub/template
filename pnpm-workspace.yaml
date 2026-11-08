@@ -22,7 +22,7 @@ trustPolicy: no-downgrade
 # Seven days, in minutes: a version published longer ago than this is no longer held to the trust policy, so
 # a long-standing release that predates provenance is not refused as a downgrade.
 trustPolicyIgnoreAfter: 10080
-# The only dependencies whose install scripts may run. The template's tooling needs none: oxfmt, oxlint,
+# The only dependencies whose install scripts may run. The workspace's tooling needs none: oxfmt, oxlint,
 # TypeScript and Vitest ship their native binaries as optional dependencies. A dependency that needs one gets
 # an entry in the same change, with the reason in a comment, as `esbuild: true` for a package that fetches
 # its binary on install.

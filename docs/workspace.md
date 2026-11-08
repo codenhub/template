@@ -28,11 +28,7 @@ This document is the workspace's contract: the names of the root scripts and wha
 
 Keep these names as they are: CI, the git hooks and the agent instructions call them by name. A script that only some projects need, such as `dev` or an end-to-end suite, is the project's to add.
 
-<!-- project:start -->
-
-<!-- The project's own root scripts, as a table with the same columns, such as `dev`, `test:browser`, or a generator, and the checks `pnpm verify` runs after `test`. Leave empty when there are none. -->
-
-<!-- project:end -->
+<!-- The project's own root scripts, as a table with the same columns, such as `dev`, `test:browser`, or a generator, and the checks `pnpm verify` runs after `test`. -->
 
 ## Configuration
 
@@ -50,11 +46,7 @@ Keep these names as they are: CI, the git hooks and the agent instructions call 
 
 The TypeScript and Vitest configurations depend on how the project runs its checks; [Tooling](tooling.md) describes them.
 
-<!-- project:start -->
-
-<!-- The project's own configuration files, as a table with the same columns, such as an extra tsconfig for one runtime, a Rust toolchain, or a deployment config. Leave empty when there are none. -->
-
-<!-- project:end -->
+<!-- The project's own configuration files, as a table with the same columns, such as an extra tsconfig for one runtime, a Rust toolchain, or a deployment config. -->
 
 ### Two formatters
 
@@ -64,11 +56,7 @@ oxfmt formats everything it understands except Markdown; Prettier formats only M
 
 Every third-party dependency version is declared once, in the catalog in `pnpm-workspace.yaml`, and referred to as `catalog:` in each `package.json`. The workspace therefore cannot hold two versions of one dependency by accident, and an upgrade is a one-line change that Dependabot can propose ([CI](ci.md#dependency-updates)). A workspace package depends on another as `workspace:*`, and a `peerDependencies` range says what a consumer may install, so neither is a catalog entry.
 
-<!-- project:start -->
-
-<!-- Version rules only this project has, such as installing a published workspace package from its release through the catalog. Leave the block empty when there are none. -->
-
-<!-- project:end -->
+<!-- Version rules only this project has, such as installing a published workspace package from its release through the catalog. -->
 
 ## Git hooks
 
@@ -76,7 +64,7 @@ Every third-party dependency version is declared once, in the catalog in `pnpm-w
 
 `pre-commit` formats and lints the staged files, fixes what it can, and re-stages the result. It runs those checks and no others: type checking and tests take minutes, and a hook that slow gets bypassed until it may as well not exist. `pnpm verify` is where the rest belongs.
 
-A project with code in another language, such as Rust or Go, adds its formatter in the hook's project block, which names the extensions it owns and the commands that fix and check them; those files then skip oxfmt. When oxfmt also understands one of those extensions, the project lists the same files in the `.oxfmtrc.json` project block's `ignorePatterns`, so `pnpm format:check` and `pnpm format:fix` leave them to its formatter too. Its linter, like the type checker, belongs to `pnpm verify`.
+A project with code in another language, such as Rust or Go, adds its formatter to `pre-commit` through `PROJECT_EXTENSIONS`, `project_fix`, and `project_check`, which name the extensions it owns and the commands that fix and check them; those files then skip oxfmt. When oxfmt also understands one of those extensions, the project lists the same files in `ignorePatterns` in `.oxfmtrc.json`, so `pnpm format:check` and `pnpm format:fix` leave them to its formatter too. Its linter, like the type checker, belongs to `pnpm verify`.
 
 `pre-commit` reads files from the working tree rather than from the index. For a file that is only partly staged that matters: the hook never rewrites it, because re-staging would sweep in the parts deliberately left out of the commit, and it checks the file as it sits on disk. A commit whose staged content is already clean can therefore still fail. The alternative, skipping such files, would let unformatted code through the one check meant to stop it.
 

@@ -29,6 +29,4 @@ body:
     attributes:
       label: Contracts touched
       description: Which public APIs, options, defaults, limits, or persisted formats the proposal adds or changes, if any, and why each is needed.
-  # project:start
-  # Fields this project's triage needs, such as the invariants a proposal affects. Delete this comment when adding them, or leave the block empty.
-  # project:end
+  # Fields this project's triage needs, such as the invariants a proposal affects. Delete this comment when adding them.

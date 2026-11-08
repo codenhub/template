@@ -120,11 +120,7 @@ A roadmap, when the project keeps one, records durable direction: current focus,
 
 Every document is listed in [`docs/README.md`](../README.md). Adding, moving, or deleting one updates that index in the same change.
 
-<!-- project:start -->
-
-<!-- Project-specific additions to the layout: extra folders, where an exception register lives, documentation kept with packages. Leave empty when there are none. -->
-
-<!-- project:end -->
+<!-- Project-specific additions to the layout: extra folders, where an exception register lives, documentation kept with packages. -->
 
 ## Agent instructions
 
