@@ -53,7 +53,10 @@ run_on() {
   fi
 }
 
-# oxlint reads code only, and exits non-zero when handed nothing it can parse.
+# oxlint reads code only, and exits non-zero when handed nothing it can parse. It
+# also exits non-zero when every file it is handed matches its ignorePatterns,
+# which `--no-error-on-unmatched-pattern` turns back into a pass: committing a
+# file the lint config deliberately ignores is not a lint failure.
 select_code() {
   grep -E '\.(cjs|cts|js|jsx|mjs|mts|ts|tsx)$' "$1" >"$2" || true
 }
@@ -68,7 +71,7 @@ if [ -s "$work/fixable" ]; then
   select_md "$work/fixable" "$work/fixable-md"
   run_on "$work/fixable-md" pnpm exec prettier --write --log-level warn --
   select_code "$work/fixable" "$work/fixable-code"
-  run_on "$work/fixable-code" pnpm exec oxlint --fix --
+  run_on "$work/fixable-code" pnpm exec oxlint --fix --no-error-on-unmatched-pattern --
   run_on "$work/fixable" git add --
 fi
 
@@ -76,4 +79,4 @@ run_on "$work/staged" pnpm exec oxfmt --check --no-error-on-unmatched-pattern --
 select_md "$work/staged" "$work/md"
 run_on "$work/md" pnpm exec prettier --check --log-level warn --
 select_code "$work/staged" "$work/code"
-run_on "$work/code" pnpm exec oxlint --deny-warnings --
+run_on "$work/code" pnpm exec oxlint --deny-warnings --no-error-on-unmatched-pattern --
