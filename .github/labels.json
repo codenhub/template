@@ -5,6 +5,6 @@
   { "name": "type:docs", "color": "0075ca", "description": "Documentation only" },
   { "name": "type:chore", "color": "cfd3d7", "description": "Tooling, CI, dependencies, or repository upkeep" },
   { "name": "status:needs-triage", "color": "fbca04", "description": "Not yet reviewed by a maintainer" },
-  { "name": "status:blocked", "color": "b60205", "description": "Waiting on another issue, release, or decision" },
-  { "name": "upstream", "color": "5319e7", "description": "Needs a change in a dependency we maintain first" }
+  { "name": "status:blocked", "color": "d93f0b", "description": "Waiting on another issue, release, or decision" },
+  { "name": "status:upstream", "color": "5319e7", "description": "Waiting on a change in a dependency we maintain" }
 ]
