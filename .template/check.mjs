@@ -347,6 +347,9 @@ export function check({ cwd = process.cwd(), templateUrl } = {}) {
       "--",
       ...blocks,
     ]);
+    if (changed.status !== 0) {
+      problems.push(`could not compare the modes of blocks files with ${synced.slice(0, 7)}: ${changed.stderr}`);
+    }
     for (const { path, theirs, ours } of modeChanges(changed.stdout)) {
       report(path, `${path}: mode ${ours}, but the template at ${synced.slice(0, 7)} has ${theirs}`);
     }

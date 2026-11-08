@@ -76,7 +76,7 @@ Every third-party dependency version is declared once, in the catalog in `pnpm-w
 
 `pre-commit` formats and lints the staged files, fixes what it can, and re-stages the result. It runs those checks and no others: type checking and tests take minutes, and a hook that slow gets bypassed until it may as well not exist. `pnpm verify` is where the rest belongs.
 
-A project with code in another language, such as Rust or Go, adds its formatter in the hook's project block, which names the extensions it owns and the commands that fix and check them; those files then skip oxfmt. Its linter, like the type checker, belongs to `pnpm verify`.
+A project with code in another language, such as Rust or Go, adds its formatter in the hook's project block, which names the extensions it owns and the commands that fix and check them; those files then skip oxfmt. When oxfmt also understands one of those extensions, the project lists the same files in the `.oxfmtrc.json` project block's `ignorePatterns`, so `pnpm format:check` and `pnpm format:fix` leave them to its formatter too. Its linter, like the type checker, belongs to `pnpm verify`.
 
 `pre-commit` reads files from the working tree rather than from the index. For a file that is only partly staged that matters: the hook never rewrites it, because re-staging would sweep in the parts deliberately left out of the commit, and it checks the file as it sits on disk. A commit whose staged content is already clean can therefore still fail. The alternative, skipping such files, would let unformatted code through the one check meant to stop it.
 

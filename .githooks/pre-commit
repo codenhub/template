@@ -94,7 +94,9 @@ if [ -s "$work/fixable" ]; then
   select_project "$work/fixable" "$work/fixable-project"
   select_web "$work/fixable" "$work/fixable-web" "$work/fixable-project"
   run_on "$work/fixable-web" pnpm exec oxfmt --no-error-on-unmatched-pattern --
-  project_fix "$work/fixable-project"
+  if [ -s "$work/fixable-project" ]; then
+    project_fix "$work/fixable-project"
+  fi
   select_md "$work/fixable" "$work/fixable-md"
   run_on "$work/fixable-md" pnpm exec prettier --write --log-level warn --
   select_code "$work/fixable" "$work/fixable-code"
@@ -107,7 +109,9 @@ fi
 select_project "$work/staged" "$work/project"
 select_web "$work/staged" "$work/web" "$work/project"
 run_on "$work/web" pnpm exec oxfmt --check --no-error-on-unmatched-pattern --
-project_check "$work/project"
+if [ -s "$work/project" ]; then
+  project_check "$work/project"
+fi
 select_md "$work/staged" "$work/md"
 run_on "$work/md" pnpm exec prettier --check --log-level warn --
 select_code "$work/staged" "$work/code"
