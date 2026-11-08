@@ -15,8 +15,8 @@ export default defineConfig({
     passWithNoTests: true,
     coverage: {
       provider: "v8",
-      include: ["packages/*/src/**", "apps/*/src/**", "scripts/**"],
-      exclude: ["**/*.test.ts", "**/*.test.tsx"],
+      include: ["packages/*/src/**", "apps/*/src/**", "scripts/**", ".template/*.mjs"],
+      exclude: ["**/*.test.ts", "**/*.test.tsx", "**/*.test.mjs"],
     },
   },
 });
