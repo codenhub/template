@@ -34,14 +34,16 @@ report() {
 }
 trap report EXIT
 
-git diff --cached --name-only --diff-filter=ACMR |
+# `core.quotePath=false` lists a path with non-ASCII characters as it is. Quoted, as
+# `"caf\303\251.md"`, it would match no extension below and go unchecked.
+git -c core.quotePath=false diff --cached --name-only --diff-filter=ACMR |
   grep -E '\.(astro|cjs|css|cts|html|js|json|jsx|md|mjs|mts|svelte|ts|tsx)$' >"$work/staged" || true
 
 if [ ! -s "$work/staged" ]; then
   exit 0
 fi
 
-git diff --name-only >"$work/unstaged" || true
+git -c core.quotePath=false diff --name-only >"$work/unstaged" || true
 grep -Fxv -f "$work/unstaged" "$work/staged" >"$work/fixable" || true
 
 # Runs a command over a newline-delimited file list, skipping an empty one.
