@@ -32,7 +32,11 @@ Rejected: **one runner command in every project,** such as `just verify` or `mak
 
 `commit-msg` and `pre-push` are already plain `sh` and stack-neutral. `pre-commit` becomes a stack-neutral `sh` dispatcher: it keeps its current handling of staged and partly staged files, and calls the fix and check commands a profile declares per file extension. `.githooks/install.mjs` goes away; setup documents `git config core.hooksPath .githooks`, and a profile MAY run it from its install step, as `node-pnpm` does from `pnpm prepare`.
 
-This also settles a gap found in review of codenhub/template#18: a project's other formatter was run by the hook but not by `pnpm format:check`. Once the profile declares its formatters, the same declaration feeds both.
+The profile's commands are in `.githooks/profile.sh`, which `pre-commit` sources. It sets `PROFILE_EXTENSIONS`, the extensions any of its checks reads, and `PROFILE_FIX_HINT`, the commands that fix what they report, and defines `profile_fix` and `profile_check`, which take a list of files and usually call `on_ext`, a helper the hook provides that runs a command over the files with matching extensions.
+
+Rejected: **a plain data file** listing extension, fix command, and check command. It would look safer than shell code, but the hook is already shell code from the same repository, so it would add no protection, and the hook would need a parser for it whose quoting of arguments is where it would go wrong.
+
+This narrows a gap found in review of codenhub/template#18, where a project's other formatter was run by the hook but not by `pnpm format:check`, without closing it: the formatter's commands now sit side by side in the profile, in `profile.sh` and in the `format:*` scripts, and [Workspace](../docs/workspace.md#git-hooks) says to add them to both. Having the gate read `profile.sh` would close it, but `pnpm` runs scripts through `cmd` on Windows, where `sh` is not always on the path.
 
 Rejected: **hooks per profile,** keeping `install.mjs` and the Node `pre-commit` in `node-pnpm` and writing another `pre-commit` for each stack. The staged-file handling is the hard part of the hook, with its own traps in `.githooks/AGENTS.md`, and it would be copied into every profile.
 
@@ -56,7 +60,6 @@ Rejected: **merging a core part and a profile part,** such as a core `.gitignore
 
 These are answered while implementing, each recorded here before the change that depends on it:
 
-- **Where `pre-commit` reads a profile's commands.** Candidates: a sourced `sh` file such as `.githooks/profile.sh` that the profile owns, or a plain data file listing extension, fix command, and check command.
 - **How a comparison sees the overlay.** A project compares with the core plus one profile, not with the repository as it is. Candidates: a script in `.template/` that assembles core and profile into a temporary directory, compared with `git diff --no-index`; or an assembled branch per profile, published by the template's CI, which keeps the comparison a plain `git diff FETCH_HEAD`.
 - **The label sync command.** `CONTRIBUTING.md` creates the labels with `node -e`, which a project without Node.js cannot run. Candidates: a `sh` loop over `gh label create` that needs `jq`, or the command as a profile value.
 - **How the template verifies itself.** Once the Node files move into `profiles/node-pnpm/`, the repository root is no longer a pnpm workspace, and `pnpm verify` cannot run there. The template's CI assembles each profile into a project and runs that project's gate, and the same assembly creates a project.
@@ -72,6 +75,7 @@ Where each file goes. "Split" means the file's general part stays in the core an
 | `.githooks/commit-msg`, `.githooks/pre-push`, `.githooks/AGENTS.md`                                                                          | Core             |
 | `.githooks/pre-commit`                                                                                                                       | Core, dispatcher |
 | `.githooks/install.mjs`                                                                                                                      | Removed          |
+| `.githooks/profile.sh`                                                                                                                       | `node-pnpm`      |
 | `docs/README.md`, `docs/guidelines/documentation.md`, `docs/guidelines/security.md`, `docs/guidelines/brand.md`                              | Core             |
 | `docs/guidelines/code.md`                                                                                                                    | Split            |
 | `docs/specs/tests.md`, `docs/ci.md`                                                                                                          | Split            |
@@ -85,7 +89,7 @@ Where each file goes. "Split" means the file's general part stays in the core an
 Each step is its own pull request, and each leaves the template working:
 
 1. **Neutral wording in place.** The core's documents hold `{{setup}}` and `{{verify}}` where they named pnpm commands, and describe the layout through declared members, with no file moved yet. `pnpm verify` still runs at the root.
-2. **Hooks.** `pre-commit` becomes the dispatcher, reading the Node commands from wherever the open question settles; `install.mjs` is replaced by `git config core.hooksPath .githooks`, run from `pnpm prepare`.
+2. **Hooks.** `pre-commit` becomes the dispatcher, reading the Node commands from `.githooks/profile.sh`; `install.mjs` is replaced by `git config core.hooksPath .githooks`, run from `pnpm prepare`.
 3. **Split the documents.** The general parts of `code.md`, `tests.md`, and `ci.md` stay; their TypeScript, Vitest, and pnpm parts move to profile documents, still at the root.
 4. **Assembly and self-verification.** The script that assembles core and profile, used by the template's CI, by creation, and by comparison.
 5. **Move `node-pnpm` into `profiles/node-pnpm/`,** update `.template/README.md` for creation and comparison with a profile, and the `project-template` skill with it.
