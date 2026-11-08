@@ -32,11 +32,14 @@ Where a newcomer should start, and the project's overview documents, for example
 | [Code](guidelines/code.md)                   | Naming, design, TypeScript, async and errors, testing practices, and documentation in code.     |
 | [Documentation](guidelines/documentation.md) | Metadata, status and authority, recording decisions, exceptions, layout, and the writing voice. |
 | [Security](guidelines/security.md)           | Secrets, untrusted input, what stays out of logs, and reviewing a change.                       |
-| [Brand](guidelines/brand.md)                 | The name, the voice, and the visual identity, and why each was chosen.                          |
 
 <!-- project:start -->
 
-<!-- The project's own guidelines, as a table with the same columns. Leave empty when there are none. -->
+| Document                     | Contains                                                               |
+| ---------------------------- | ---------------------------------------------------------------------- |
+| [Brand](guidelines/brand.md) | The name, the voice, and the visual identity, and why each was chosen. |
+
+<!-- The project's own guidelines, as a table with the same columns, including the brand guidelines when the project keeps them in `guidelines/brand.md`. Leave empty when there are none. -->
 
 <!-- project:end -->
 
