@@ -1,6 +1,6 @@
 ---
 status: APPROVED
-last_updated: 2026-11-02
+last_updated: 2026-11-08
 scope: How code keeps the project's security commitments, for anyone writing or reviewing a change.
 ---
 

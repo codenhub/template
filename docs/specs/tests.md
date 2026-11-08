@@ -1,6 +1,6 @@
 ---
 status: APPROVED
-last_updated: 2026-11-02
+last_updated: 2026-11-08
 scope: Test categories, where each lives, tooling, scripts, and coverage expectations.
 ---
 
