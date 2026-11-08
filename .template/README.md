@@ -107,14 +107,14 @@ Start on a branch, with a clean working tree and a passing `node .template/check
    git diff --stat <synced> FETCH_HEAD
    ```
 
-2. Keep a copy of the current `files` map, then copy the `files` map of `git show FETCH_HEAD:.template/manifest.json` into this manifest, keeping `template`, `synced`, and `exceptions`. A file whose class changed is handled under its new class. A file the old map lists and the new one does not was removed or renamed by the template.
+2. Keep a copy of the current `files` map, then copy the `files` map of `git show FETCH_HEAD:.template/manifest.json` into this manifest, keeping `template`, `synced`, and `exceptions`. A file whose class changed is handled under its new class. One that became `canonical` takes the template's version, `git checkout FETCH_HEAD -- <path>`, after the project's changes to it are considered for proposing upstream or recorded as an exception; one that became `blocks` takes the template's text outside its blocks, with the project's text moved into them. A file the old map lists and the new one does not was removed or renamed by the template.
 3. Apply the `canonical` and `blocks` changes with a three-way merge, taking the paths from the old map and the new one, so a file the template removed is deleted too:
 
    ```sh
    git diff --full-index --binary <synced> FETCH_HEAD -- <canonical and blocks paths> | git apply --3way
    ```
 
-   A conflict in a `canonical` file is a local edit: the template's version wins, after the local change is considered for proposing upstream. A conflict in a `blocks` file keeps the text inside every project block exactly as it was and takes the template's text outside them. A placeholder the new template text brings is filled with the project's value. A file listed in `exceptions` is left out of the diff, and its exception reviewed against what the template changed.
+   A conflict in a `canonical` file is a local edit: the template's version wins, after the local change is considered for proposing upstream. A conflict in a `blocks` file keeps the text inside every project block exactly as it was and takes the template's text outside them. A clean merge needs the same care: where the project kept a block's old default, a change to that default applies without a conflict and overwrites the project's text, so compare each block with `git diff HEAD -- <blocks paths>` and restore any block the patch changed. The check cannot see this; it compares only the text outside the blocks. A placeholder the new template text brings is filled with the project's value. A file listed in `exceptions` is left out of the diff, and its exception reviewed against what the template changed.
 
 4. Review `git diff <synced> FETCH_HEAD -- <seed paths>` file by file and apply only the changes the project wants. `pnpm-lock.yaml` is never patched; `pnpm install` regenerates it after a change to `package.json` or `pnpm-workspace.yaml`. A `seed` file the template removed belongs to the project, which decides whether to delete it.
 5. Set `synced` to `git rev-parse FETCH_HEAD`, then run `pnpm install`, `node .template/check.mjs`, and `pnpm verify`, and commit. The commit message names the template commit, and the pull request lists the conflicts and how each was resolved, and the `seed` changes taken and declined.

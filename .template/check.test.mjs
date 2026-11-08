@@ -121,6 +121,15 @@ describe("check", () => {
     expect(run().problems).toEqual([]);
   });
 
+  it("accepts a frontmatter value the project writes over several lines", () => {
+    const { project, run } = setUp();
+    write(project, {
+      "AGENTS.md": TEMPLATE_FILES["AGENTS.md"].replace("status: DRAFT", "status: >\n  APPROVED\n  for Acme"),
+    });
+
+    expect(run().problems).toEqual([]);
+  });
+
   it("reports an edit to a blocks file outside its blocks, with the line", () => {
     const { project, run } = setUp();
     write(project, { "AGENTS.md": TEMPLATE_FILES["AGENTS.md"].replace("Template text.", "Edited text.") });

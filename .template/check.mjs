@@ -99,7 +99,10 @@ export function templateLines(text, isDocument) {
     const end = all.indexOf("---", 1);
     if (end > 0) {
       for (let index = 0; index <= end; index += 1) {
-        kept.push({ text: all[index].replace(/^([\w-]+):.*$/, "$1:"), line: index + 1 });
+        // An indented line continues the value above it, such as a folded `>` scalar, and is the project's too.
+        if (!/^\s/.test(all[index])) {
+          kept.push({ text: all[index].replace(/^([\w-]+):.*$/, "$1:"), line: index + 1 });
+        }
       }
       next = end + 1;
     }
