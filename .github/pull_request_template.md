@@ -6,7 +6,7 @@ Fixes #
 
 ## Checks
 
-- [ ] `pnpm verify` passes, or the skipped steps are listed here
+- [ ] The delivery gate `CONTRIBUTING.md` names passes, `pnpm verify` by default, or the skipped steps are listed here
 - [ ] Documentation affected by behavior, API, or convention changes is updated in this pull request
 
 <!-- project:start -->
