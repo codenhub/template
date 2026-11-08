@@ -37,7 +37,7 @@
   },
   "overrides": [
     {
-      "files": [".githooks/**", "scripts/**", "**/*.test.ts"],
+      "files": [".githooks/**", "**/scripts/**", "**/*.test.ts", "**/*.test.tsx"],
       "rules": {
         "no-console": "off"
       }
