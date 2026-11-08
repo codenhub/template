@@ -18,7 +18,6 @@
     ".github/pull_request_template.md": "blocks",
     ".github/workflows/ci.yml": "blocks",
     ".gitignore": "blocks",
-    ".npmrc": "canonical",
     ".nvmrc": "canonical",
     ".oxfmtrc.json": "blocks",
     ".oxlintrc.json": "blocks",

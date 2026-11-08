@@ -12,16 +12,16 @@ scope: The pinned toolchain, dependency installs, the CI workflow, action pinnin
 
 Local and CI runs resolve the same versions, each declared once:
 
-| Where                           | Declares                                        |
-| ------------------------------- | ----------------------------------------------- |
-| `package.json` `engines`        | The Node.js and pnpm range every run must meet  |
-| `package.json` `packageManager` | The exact pnpm version pnpm installs itself     |
-| `.nvmrc`                        | The exact Node.js version, read by `nvm` and CI |
-| `.npmrc` `engine-strict`        | Makes an install outside `engines` fail         |
+| Where                                | Declares                                        |
+| ------------------------------------ | ----------------------------------------------- |
+| `package.json` `engines`             | The Node.js and pnpm range every run must meet  |
+| `package.json` `packageManager`      | The exact pnpm version pnpm installs itself     |
+| `.nvmrc`                             | The exact Node.js version, read by `nvm` and CI |
+| `pnpm-workspace.yaml` `engineStrict` | Makes an install outside `engines` fail         |
 
 CI reads those same files rather than repeating a version: `pnpm/action-setup` takes pnpm from `packageManager`, and `actions/setup-node` takes Node.js from `.nvmrc`. A version is raised in one place, and a machine that cannot satisfy it is told at install time instead of failing later in a way nobody can reproduce.
 
-`engine-strict` is deliberate friction. A patch-level difference rarely matters, and the one time it does, the failure looks like a bug in the change under review rather than a difference in the runtime.
+`engineStrict` is deliberate friction. A patch-level difference rarely matters, and the one time it does, the failure looks like a bug in the change under review rather than a difference in the runtime.
 
 Workspace setup, pnpm, Node.js and a `--frozen-lockfile` install, lives in the composite action `.github/actions/setup`, so every job that needs the workspace sets it up the same way. A lockfile that disagrees with the manifests fails the install rather than being rewritten in CI.
 
