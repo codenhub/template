@@ -1,6 +1,6 @@
 ---
 status: APPROVED
-last_updated: 2026-11-02
+last_updated: 2026-11-08
 scope: Coding conventions for every package and app in the workspace.
 ---
 
@@ -69,7 +69,7 @@ Exceptions: framework callbacks, test helpers, tiny local functions, and APIs wh
 
 ## TypeScript
 
-- Use strict TypeScript; `tsconfig.json` sets the flags.
+- Use strict TypeScript; `tsconfig.base.json` sets the flags.
 - Prefer `unknown` to `any`. Validate `unknown` at the boundary before use.
 - Prefer interfaces for object shapes and type aliases for unions and intersections.
 - Use type-only imports when importing only types.
@@ -78,7 +78,7 @@ Exceptions: framework callbacks, test helpers, tiny local functions, and APIs wh
 
 ## Modules and imports
 
-- Prefer named exports.
+- Prefer named exports, except where a tool or framework requires a default export, such as config files or framework routes.
 - Use barrel files only as package or folder entrypoints.
 - Do not deep-import another package's internals unless the subpath is part of its `exports`.
 - Keep dependency direction clear: shared code does not import app-specific code.

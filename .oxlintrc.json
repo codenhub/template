@@ -22,7 +22,7 @@
     "jsdoc/require-returns-description": "error",
     "jsdoc/require-throws-description": "error",
     "no-await-in-loop": "error",
-    "no-console": "error",
+    "no-console": ["error", { "allow": ["warn", "error"] }],
     "no-empty": "error",
     "no-empty-function": "off",
     "no-var": "error",
@@ -37,7 +37,7 @@
   },
   "overrides": [
     {
-      "files": [".githooks/**", "scripts/**", "**/*.test.ts"],
+      "files": [".githooks/**", "**/scripts/**", "**/*.test.ts", "**/*.test.tsx"],
       "rules": {
         "no-console": "off"
       }

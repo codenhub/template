@@ -159,7 +159,7 @@ Run scripts from the repository root. During development, narrow checks to what 
 pnpm verify
 ```
 
-It runs formatting, linting, type checking, tests, and the build, the same checks CI runs. Report any step that was skipped or failed.
+It runs formatting, linting, the build, type checking, and tests, the same checks CI runs. Report any step that was skipped or failed.
 
 <!-- project:start -->
 

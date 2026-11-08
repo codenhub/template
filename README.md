@@ -18,7 +18,7 @@ pnpm install
 pnpm verify
 ```
 
-`pnpm verify` runs formatting, linting, type checking, tests, and the build. [Tooling](docs/tooling.md) describes every script.
+`pnpm verify` runs formatting, linting, the build, type checking, and tests. [Tooling](docs/tooling.md) describes every script.
 
 ## Documentation
 

@@ -1,7 +1,13 @@
 {
   // The repository's own TypeScript outside the workspace packages: the root config files and `scripts/`.
   "extends": "./tsconfig.base.json",
+  // Node.js runs these files directly, with type stripping and no bundler, so they are checked by Node's rules:
+  // its types, NodeNext resolution, and relative imports written with their `.ts` extension, as Node requires.
   "compilerOptions": {
+    "types": ["node"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "allowImportingTsExtensions": true,
     "tsBuildInfoFile": "./node_modules/.cache/tsconfig.root.tsbuildinfo"
   },
   "include": ["*.ts", "scripts/**/*.ts"]

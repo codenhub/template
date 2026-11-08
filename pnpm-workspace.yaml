@@ -5,6 +5,7 @@ packages:
 # Every version is declared once, here, and packages refer to it as `catalog:`, so the workspace can never
 # hold two versions of one dependency by accident. A new third-party dependency adds its version here.
 catalog:
+  "@types/node": ^24.19.2
   "@vitest/coverage-v8": ^5.0.5
   oxfmt: ^0.75.0
   oxlint: ^1.89.0

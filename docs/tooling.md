@@ -1,6 +1,6 @@
 ---
 status: IMPLEMENTED
-last_updated: 2026-11-02
+last_updated: 2026-11-08
 scope: Root scripts, the tool configurations, narrowing a run, and adding a package.
 ---
 
@@ -21,31 +21,31 @@ Every script runs from the repository root. There is no workspace CLI: the scrip
 | `pnpm test:watch`    | The same, in watch mode.                                                                                     |
 | `pnpm test:coverage` | The same, with a V8 coverage report in `coverage/`.                                                          |
 | `pnpm build`         | Every workspace package's `build` script, in dependency order. A package without one is skipped.             |
-| `pnpm verify`        | `format:check`, `lint:check`, `typecheck`, `test` and `build`, in that order, stopping at the first failure. |
+| `pnpm verify`        | `format:check`, `lint:check`, `build`, `typecheck` and `test`, in that order, stopping at the first failure. |
 | `pnpm prepare`       | Runs on install: points git at the committed hooks in `.githooks/`.                                          |
 
-`pnpm verify` is what CI runs ([CI](ci.md)), so a green local `verify` predicts a green run. The order puts the cheapest checks first: a formatting slip is reported in a second instead of after the tests.
+`pnpm verify` is what CI runs ([CI](ci.md)), so a green local `verify` predicts a green run. The order puts the cheapest checks first, so a formatting slip is reported in a second instead of after the tests. The build comes before type checking and tests because a package that imports another workspace package resolves it through that package's `exports`, which for a built package point at `dist/`: on a fresh clone, as in CI, `tsc -b` and Vitest run before the build cannot resolve the import and fail.
 
 A script that only some projects need, such as `dev` or an end-to-end suite, is the project's to add. Keep the names above as they are: CI, the git hooks and the agent instructions call them by name.
 
 ## Configuration
 
-| File                  | Configures                                                                                                                                                     |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `package.json`        | The root scripts, the tooling as `devDependencies`, and the pinned Node.js and pnpm (`engines`, `packageManager`).                                             |
-| `pnpm-workspace.yaml` | The workspace globs, the catalog of every dependency version, and the supply-chain rules for installs ([CI](ci.md#dependency-installs)).                       |
-| `.npmrc`              | `engine-strict`, so an install outside `engines` fails.                                                                                                        |
-| `.nvmrc`              | The exact Node.js version, read by `nvm` and by CI.                                                                                                            |
-| `.editorconfig`       | Indentation, final newline, LF line endings, and no hard wrap in Markdown.                                                                                     |
-| `.gitattributes`      | LF line endings in the repository and the working tree on every platform, and the binary file types.                                                           |
-| `.oxfmtrc.json`       | oxfmt: 120 columns, double quotes, semicolons, trailing commas, sorted imports and `package.json` keys. Markdown is excluded; Prettier owns it.                |
-| `.prettierrc.json`    | Prettier, for Markdown only: `proseWrap: "never"`, so a paragraph is one line and a diff shows the sentence that changed.                                      |
-| `.prettierignore`     | Paths inside the Markdown set Prettier leaves alone: build output and caches.                                                                                  |
-| `.oxlintrc.json`      | oxlint's plugins and rules. `no-console` is an error except in `.githooks/`, `scripts/` and tests, where printing is the point.                                |
-| `tsconfig.base.json`  | The compiler settings every project shares: strict, `noUncheckedIndexedAccess`, `verbatimModuleSyntax`, bundler resolution, and type-checking only (`noEmit`). |
-| `tsconfig.json`       | The solution `tsc -b` builds. It lists projects and holds no files.                                                                                            |
-| `tsconfig.root.json`  | The project for TypeScript outside the packages: root config files such as `vitest.config.ts`, and `scripts/`.                                                 |
-| `vitest.config.ts`    | The Vitest projects: the root project for `scripts/`, and every package and app with a `vitest.config.ts`.                                                     |
+| File                  | Configures                                                                                                                                                                                                                                                                |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `package.json`        | The root scripts, the tooling as `devDependencies`, and the pinned Node.js and pnpm (`engines`, `packageManager`).                                                                                                                                                        |
+| `pnpm-workspace.yaml` | The workspace globs, the catalog of every dependency version, and the supply-chain rules for installs ([CI](ci.md#dependency-installs)).                                                                                                                                  |
+| `.npmrc`              | `engine-strict`, so an install outside `engines` fails.                                                                                                                                                                                                                   |
+| `.nvmrc`              | The exact Node.js version, read by `nvm` and by CI.                                                                                                                                                                                                                       |
+| `.editorconfig`       | Indentation, final newline, LF line endings, and no hard wrap in Markdown.                                                                                                                                                                                                |
+| `.gitattributes`      | LF line endings in the repository and the working tree on every platform, and the binary file types.                                                                                                                                                                      |
+| `.oxfmtrc.json`       | oxfmt: 120 columns, double quotes, semicolons, trailing commas, sorted imports and `package.json` keys. Markdown is excluded; Prettier owns it. Nothing else is listed: oxfmt already skips what `.gitignore` and `.prettierignore` list, and the lockfile.               |
+| `.prettierrc.json`    | Prettier, for Markdown only: `proseWrap: "never"`, so a paragraph is one line and a diff shows the sentence that changed.                                                                                                                                                 |
+| `.prettierignore`     | Paths inside the Markdown set Prettier leaves alone: build output and caches.                                                                                                                                                                                             |
+| `.oxlintrc.json`      | oxlint's plugins and rules. `no-console` allows `console.warn` and `console.error`, a library's deliberate diagnostics, and refuses the rest, such as a forgotten `console.log`, except in `.githooks/`, any `scripts/` directory and tests, where printing is the point. |
+| `tsconfig.base.json`  | The compiler settings every project shares: strict, `noUncheckedIndexedAccess`, `verbatimModuleSyntax`, bundler resolution, and type-checking only (`noEmit`).                                                                                                            |
+| `tsconfig.json`       | The solution `tsc -b` builds. It lists projects and holds no files.                                                                                                                                                                                                       |
+| `tsconfig.root.json`  | The project for TypeScript outside the packages: root config files such as `vitest.config.ts`, and `scripts/`. Node.js runs these directly, so it checks them by Node's rules: Node.js types, NodeNext resolution, and relative imports with their `.ts` extension.       |
+| `vitest.config.ts`    | The Vitest projects: the root project for `scripts/`, and every package and app with a `vitest.config.ts`.                                                                                                                                                                |
 
 ### Two formatters
 
