@@ -1,12 +1,12 @@
 ---
 status: IMPLEMENTED
-last_updated: 2026-11-02
+last_updated: 2026-11-08
 scope: The pinned toolchain, dependency installs, the CI workflow, action pinning, and dependency updates.
 ---
 
 # Continuous integration
 
-`.github/workflows/ci.yml` verifies every pull request and every push to `main`. It runs the same script a contributor runs locally, `pnpm verify`, so a green run means `verify` passed rather than that some CI-only approximation of it did. [Tooling](tooling.md) describes the scripts.
+`.github/workflows/ci.yml` verifies every pull request, every merge-queue check, and every push to `main`. It runs the same script a contributor runs locally, `pnpm verify`, so a green run means `verify` passed rather than that some CI-only approximation of it did. [Tooling](tooling.md) describes the scripts.
 
 ## Toolchain
 
@@ -45,7 +45,7 @@ There is no change-based selection: every run checks the whole workspace. A chec
 
 `Working tree is clean` fails when a check has left a tracked or untracked file changed. A check that writes has changed what it was checking, so it is reported rather than passing.
 
-Runs for the same pull request cancel each other, because only the newest push is worth a verdict. Runs on `main` never cancel: each merge is the authoritative check of that commit. The workflow's token is read-only (`permissions: contents: read`); a job that needs more asks for it on that job alone.
+Runs for the same pull request cancel each other, because only the newest push is worth a verdict. A merge-queue run or a push to `main` never cancels: each is the authoritative check of a commit. The `merge_group` trigger never fires in a repository without a merge queue. A project that requires one removes the `push` trigger, which sits in a project block for that reason: the queue lands the exact commit it checked, so a push run would only repeat a passed check. The workflow's token is read-only (`permissions: contents: read`); a job that needs more asks for it on that job alone.
 
 <!-- project:start -->
 
