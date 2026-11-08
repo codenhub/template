@@ -48,7 +48,7 @@ This repository is docs-first. [`docs/README.md`](docs/README.md) indexes every 
 - Prefer canonical sources. Generated files, compilations, and references are alternate views, not additional contracts to read alongside their inputs.
 - Find code with focused searches (`grep -n`, `rg`) and read the line ranges they point to. Read a whole file only when the change needs all of it, and do not dump several files or a directory in one command (`cat a.ts b.ts`, `for f in …; do cat "$f"; done`).
 - Batch independent inspections as parallel tool calls, each kept focused, not as one command whose output is the sum of all of them.
-- Narrow commands during development, such as `pnpm test <file>`, and reserve `pnpm verify` for the completed change. Retain the checks the contributor workflow requires.
+- Narrow commands during development, as [tooling](docs/tooling.md) describes, and reserve the delivery gate [contributing](CONTRIBUTING.md#validation) names for the completed change. Retain the checks the contributor workflow requires.
 - Read test, build, and CI output as a summary first: filter to failures or the tail, and treat a background task's output file the same way. Open the full log only when the summary leaves a failure unexplained. Keep machine-readable and interactive output usable.
 - At a natural boundary, such as an audit finished before fixes start, record what the next phase needs in the repository or the pull request, and suggest continuing in a new session. Every turn resends the whole context.
 
