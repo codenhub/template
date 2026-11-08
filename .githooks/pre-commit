@@ -74,7 +74,9 @@ if [ -s "$work/fixable" ]; then
   run_on "$work/fixable-md" pnpm exec prettier --write --log-level warn --
   select_code "$work/fixable" "$work/fixable-code"
   run_on "$work/fixable-code" pnpm exec oxlint --fix --no-error-on-unmatched-pattern --
-  run_on "$work/fixable" git add --
+  # Literal pathspecs, so a name such as `app/[id]/page.tsx` is not read as a
+  # pattern that also stages the unstaged changes of `app/i/page.tsx`.
+  run_on "$work/fixable" git --literal-pathspecs add --
 fi
 
 run_on "$work/staged" pnpm exec oxfmt --check --no-error-on-unmatched-pattern --
