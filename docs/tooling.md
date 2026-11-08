@@ -1,6 +1,6 @@
 ---
 status: IMPLEMENTED
-last_updated: 2026-11-02
+last_updated: 2026-11-08
 scope: Root scripts, the tool configurations, narrowing a run, and adding a package.
 ---
 
