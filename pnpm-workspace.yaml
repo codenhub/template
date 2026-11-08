@@ -27,3 +27,8 @@ trustPolicyIgnoreAfter: 10080
 # an entry in the same change, with the reason in a comment, as `esbuild: true` for a package that fetches
 # its binary on install.
 allowBuilds: {}
+
+# Makes pnpm refuse an install outside `engines` in package.json instead of only printing a warning, so a
+# mismatch surfaces before it turns into a failure no one can reproduce (docs/ci.md, "Toolchain"). It lives
+# here because pnpm ignores `engine-strict` in .npmrc: checked with pnpm 11.7 and 12.16.
+engineStrict: true
