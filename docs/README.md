@@ -23,14 +23,14 @@ Where a newcomer should start, and the project's overview documents, for example
 
 ## Guidelines
 
-| Document                                     | Contains                                                                                        |
-| -------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| [Brand](guidelines/brand.md)                 | The name, the voice, and the visual identity, and why each was chosen.                          |
-| [Code](guidelines/code.md)                   | Naming, design, TypeScript, async and errors, testing practices, and documentation in code.     |
-| [Documentation](guidelines/documentation.md) | Metadata, status and authority, recording decisions, exceptions, layout, and the writing voice. |
-| [Security](guidelines/security.md)           | Secrets, untrusted input, what stays out of logs, and reviewing a change.                       |
+| Document                                     | Contains                                                                                         |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| [Brand](guidelines/brand.md)                 | The name, the voice, and the visual identity, and why each was chosen.                           |
+| [Code](guidelines/code.md)                   | Naming, design, TypeScript, async and errors, testing practices, and documentation in code.      |
+| [Documentation](guidelines/documentation.md) | Metadata, prompts, status and authority, recording decisions, exceptions, layout, and the voice. |
+| [Security](guidelines/security.md)           | Secrets, untrusted input, what stays out of logs, and reviewing a change.                        |
 
-<!-- The project's own guidelines, as rows of the table above. Delete the Brand row when the brand lives elsewhere. -->
+<!-- The project's own guidelines, as rows of the table above. Delete the Brand row when the project has no brand guidelines or keeps them elsewhere. -->
 
 ## Repository references
 

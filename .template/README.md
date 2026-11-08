@@ -47,29 +47,45 @@ Rejected alternatives:
    | `{{year}}`        | The year the project was created.                     | `2026`               |
 
 3. Delete `.template/`.
-4. Check that no placeholder is left; this prints nothing when none is:
+4. Check that no placeholder is left; this prints nothing when none is, and searches files not yet added to git too:
 
    ```sh
-   git grep -nE '\{\{(name|slug|scope|description|owner|holder|year)\}\}'
+   git grep --untracked -nE '\{\{(name|slug|scope|description|owner|holder|year)\}\}'
    ```
 
 5. Run `pnpm install` and `pnpm verify`.
 
-The HTML comments in the documents describe what the project writes in each section. Fill the section and delete its comment, or delete the comment when the project has nothing to add there.
+The HTML comments in the documents are prompts for what the project writes in each section; the [documentation guidelines](../docs/guidelines/documentation.md#prompts) say what to do with them, and stay in the project once this directory is gone.
 
 ## Comparing a project with the template
 
-From the project's repository, fetch the template without adding a remote, then compare every file the template has with the project's working tree, leaving out the files that only ever held a starting point:
+From the project's repository, fetch the template without adding a remote, then compare the template with the project's working tree, leaving out the files that only ever held a starting point:
 
 ```sh
 git fetch --no-tags https://github.com/codenhub/template HEAD
-git diff --stat FETCH_HEAD -- $(git ls-tree -r --name-only FETCH_HEAD) \
+git diff --stat -M --diff-filter=a FETCH_HEAD -- \
   ':(exclude).template' ':(exclude)README.md' ':(exclude)LICENSE' \
   ':(exclude)docs/guidelines/brand.md' ':(exclude)pnpm-lock.yaml' ':(exclude)*.gitkeep'
 ```
 
-Drop `--stat` to see the changes. Lines starting with `-` are the template's, and lines starting with `+` are the project's. A file the template has and the project deleted shows as removed; a file only the project has is not listed. The fetch adds no remote or ref beyond `FETCH_HEAD`, and changes no tracked file.
+Drop `--stat` to see the changes. Lines starting with `-` are the template's, and lines starting with `+` are the project's. `--diff-filter=a` leaves out files only the project has, which would otherwise show as added. A file the template has and the project deleted shows as removed, and `-M` pairs a file the project moved with its template original, as `docs/{ci.md => pipeline.md}`. A file both moved and mostly rewritten is too different to pair, so it shows as removed; compare it by hand, with `git diff FETCH_HEAD:<template path> HEAD:<project path>`. The fetch adds no remote or ref beyond `FETCH_HEAD`, and changes no tracked file. The commands are POSIX shell; on Windows, run them from Git Bash.
 
-Judge each change on its own rather than each file: one file can hold a better section from each side. The project's placeholder values show up as differences on the lines that hold them, and are not changes to judge. A file the project moved shows as removed, with its new path not listed; compare its committed version by hand, with `git diff FETCH_HEAD:<template path> HEAD:<project path>`. The commands are POSIX shell; on Windows, run them from Git Bash.
+Judge each change on its own rather than each file: one file can hold a better section from each side. The project's placeholder values show up as differences on the lines that hold them, and are not changes to judge.
 
 To take the template's version of a whole file, run `git checkout FETCH_HEAD -- <path>` and restore the project's own values in it. `pnpm-lock.yaml` is never copied: after taking a change to `package.json` or `pnpm-workspace.yaml`, `pnpm install` regenerates it.
+
+## Projects from the manifest design
+
+A project created before this design still has its ties. Removing them changes no behavior:
+
+1. Delete `.template/`, including `manifest.json` and `check.mjs`.
+2. Delete each `project:start` and `project:end` marker line, keeping the text between them: it is the project's.
+3. In `.github/workflows/ci.yml`, delete the `Template conformance` step, which runs the deleted checker and would fail.
+4. In `AGENTS.md`, delete the rule about files listed in `.template/manifest.json`; in `tsconfig.root.json` and `vitest.config.ts`, delete the `.template/*.mjs` entries.
+5. Run `pnpm verify`.
+
+This prints nothing once no marker or reference is left:
+
+```sh
+git grep -nE 'project:(start|end)|\.template/'
+```
