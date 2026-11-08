@@ -37,9 +37,15 @@ Workspace setup, pnpm, Node.js and a `--frozen-lockfile` install, lives in the c
 
 ## The workflow
 
+<!-- project:start -->
+
+<!-- The workflow's jobs. The template's one job is listed; a project that adds jobs or changes what `Verify` runs replaces the table. -->
+
 | Job      | Runner          | Runs                                                 |
 | -------- | --------------- | ---------------------------------------------------- |
 | `Verify` | `ubuntu-latest` | `pnpm verify`, then the `Working tree is clean` step |
+
+<!-- project:end -->
 
 By default there is no change-based selection: every run checks the whole workspace. A check that skips part of the workspace on a pull request lets that part reach `main` unverified, and a selection has to be maintained and can be wrong in ways a green run hides. A project whose full run grows too slow to wait for adds selection then, under three rules:
 
