@@ -41,7 +41,11 @@ Workspace setup, pnpm, Node.js and a `--frozen-lockfile` install, lives in the c
 | -------- | --------------- | ---------------------------------------------------- |
 | `Verify` | `ubuntu-latest` | `pnpm verify`, then the `Working tree is clean` step |
 
-There is no change-based selection: every run checks the whole workspace. A check that skips part of the workspace on a pull request lets that part reach `main` unverified, and a selection has to be maintained and can be wrong in ways a green run hides. A project whose full run grows too slow to wait for adds selection then, with the merge into `main` still checking everything.
+There is no change-based selection: every run checks the whole workspace. A check that skips part of the workspace on a pull request lets that part reach `main` unverified, and a selection has to be maintained and can be wrong in ways a green run hides. A project whose full run grows too slow to wait for adds selection then, under three rules:
+
+- **The whole workspace is checked before the merge lands.** A merge queue does that: it runs the full check on the merge result and drops a pull request that fails it. A push run on `main` only reports afterwards, once the failure is already there. Without a queue, codenhub/codenhub's pull requests went green on their own packages while 3 of 30 merges on 2026-11-03 failed on `main`, in packages those pull requests never touched ([codenhub/codenhub@702af904](https://github.com/codenhub/codenhub/commit/702af904)).
+- **A change to `.github/` runs everything.** A workflow or the setup action belongs to no package, so a selection by changed package selects nothing, and the run passes without exercising the change it was opened for ([codenhub/codenhub@3d9bfe8a](https://github.com/codenhub/codenhub/commit/3d9bfe8a)).
+- **The run asserts the ref it compares against.** A selection that compares against the base branch needs that ref in the checkout (`fetch-depth: 0`), and the job checks the ref exists before selecting: a tool that falls back to working-tree changes when the ref is missing would, in CI, check nothing and report success.
 
 `Working tree is clean` fails when a check has left a tracked or untracked file changed. A check that writes has changed what it was checking, so it is reported rather than passing.
 
@@ -81,19 +85,21 @@ gh api repos/actions/checkout/commits/v7.0.1 --jq .sha
 
 `.github/dependabot.yml` proposes weekly updates for the GitHub Actions, including the composite actions under `.github/actions/`, and for npm, where an update arrives as a catalog change in `pnpm-workspace.yaml` with the lockfile. It moves an action's SHA and its version comment together, so a pin and its label cannot drift apart. Every update pull request is labelled `type:chore`.
 
-The groups take minor and patch updates only, so a week is one grouped pull request per ecosystem and directory. A major update arrives as a pull request of its own: it is a decision that may need code changes, and inside a group it would hold the routine updates back until it is dealt with.
+The groups take minor and patch updates only, so a week is one grouped pull request per ecosystem and directory. Dependabot groups each listed directory on its own, so the workflows and `.github/actions/*` can each get one: two pull requests for the actions in one week is the configuration working, not a duplicate. A major update arrives as a pull request of its own: it is a decision that may need code changes, and inside a group it would hold the routine updates back until it is dealt with.
 
 `@types/node` never takes a major update from Dependabot. Node's types follow the Node.js release in `engines` and `.nvmrc`, and types for a newer Node accept APIs the pinned runtime does not have; they move by hand, with `.nvmrc`. A dependency held back for a known breakage gets an `ignore` entry with the reason and the condition for removing it.
 
+Renovate does the same job, and was rejected: it runs as a GitHub App with a configuration of its own, while Dependabot is built into GitHub and already raises the repository's security updates.
+
 ## Branch protection
 
-The workflow reports; it does not block on its own. What blocks is `main`'s branch protection on GitHub, a repository setting no file here can enforce. The recommended configuration:
+The workflow reports; it does not block on its own. What blocks is a branch protection rule or a ruleset on `main`, repository settings no file here can enforce. A ruleset does the same job with more control, and either works if nobody can bypass it. The recommended configuration:
 
 | Setting                | Value                                 |
 | ---------------------- | ------------------------------------- |
 | Required status checks | `Verify`, from the GitHub Actions app |
 | Pull request required  | Yes                                   |
-| Enforced for admins    | Yes                                   |
+| Enforced for admins    | Yes, with no bypass actors            |
 | Force pushes, deletion | Refused                               |
 
 Binding the checks to the GitHub Actions app stops any other integration from reporting a passing check under the same name. Admin enforcement is what makes the rest hold: without it, a maintainer's direct push to `main` is stopped only by the `pre-push` hook, which `--no-verify` skips.
@@ -106,7 +112,7 @@ Turn on "Automatically delete head branches" in the repository's general setting
 
 <!-- project:end -->
 
-## Not covered
+## Other workflows
 
 The template's CI verifies; it does not deploy, release or publish. A project that does adds a workflow of its own and documents it here.
 

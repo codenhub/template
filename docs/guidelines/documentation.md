@@ -10,11 +10,11 @@ This document defines how the documentation in this repository is structured, ma
 
 ## Required header
 
-Every document in `docs/` MUST start with YAML frontmatter containing these fields, in this order:
+Every document in `docs/` MUST start with YAML frontmatter containing `status` and `last_updated`, and `scope` unless the title alone makes it clear, in this order:
 
 - `status`: how reliable and authoritative the document is.
 - `last_updated`: the date of the last meaningful content change, in `YYYY-MM-DD` format.
-- `scope`: what the document governs. It MAY be left out when the title alone makes that clear.
+- `scope`: what the document governs.
 
 Allowed statuses:
 
@@ -167,7 +167,9 @@ A guide, a README, or any page meant to teach what the project ships to someone 
 
 ### Voice
 
-This applies to every document a person reads: docs, READMEs, guides, notes, changelogs, and pull request descriptions alike.
+Documents that teach, such as guides, READMEs, and tutorials, use the voice below. Everything else a person reads to check or decide, such as specifications, guidelines, changelogs, issues, and pull request descriptions, is plain: precise and friendly, without the jokes. A reader of a specification is checking compliance, and a reader of a changelog is deciding whether to upgrade; neither is helped by a wink. The guardrails below hold for plain text too.
+
+An earlier version of this section applied the playful voice to every document, changelogs and pull request descriptions included. It was narrowed because those are read to check or decide, where a joke costs the reader time and rewards nothing.
 
 Write like a knowledgeable friend explaining something they built: precise, a little dry, and happy to grin about the odd parts. Humor lives in the connective prose, such as introductions, transitions, and asides, and in notes, tips, informational callouts, and anything else where nothing is at risk. There it rewards the reader without slowing them down.
 
@@ -185,4 +187,4 @@ Guardrails:
 - **One wink, not a stand-up set.** A light touch every few paragraphs is enough. If a joke needs explaining or has to be forced in, cut it.
 - **Leave existing tone to its owner.** A writer does not change the tone of existing text, adding jokes to it or sanding them off, without the approval of whoever owns that text. Fix what is wrong or unclear; keep the voice it was written in.
 
-A project's [brand guideline](brand.md) MAY refine this voice: move it toward formal or toward playful, add principles and words to use or avoid, and set the voice for surfaces this section does not cover, such as a website or marketing copy. Where the two differ on tone, the brand guideline wins for that project. The guardrails above hold either way.
+A project's brand guideline, when it has one, MAY refine this voice: move it toward formal or toward playful, extend it to other documents, add principles and words to use or avoid, and set the voice for surfaces this section does not cover, such as a website or marketing copy. Where the two differ on tone, the brand guideline wins for that project. The guardrails above hold either way. The [documentation index](../README.md) links it.

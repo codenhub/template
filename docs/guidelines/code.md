@@ -13,7 +13,7 @@ This document outlines the patterns, conventions, and guidelines to follow when 
 - Files and folders: kebab-case (`user-service.ts`, `api-routes/`).
 - Variables and functions: camelCase (`getUserById`, `isValid`).
 - Classes and types: PascalCase (`UserService`, `ApiResponse`).
-- Constants and enums: UPPER_SNAKE_CASE (`MAX_RETRY_ATTEMPTS`).
+- Constants: UPPER_SNAKE_CASE (`MAX_RETRY_ATTEMPTS`).
 - Booleans: prefixed with is, has, can, or should (`isLoading`, `hasPermission`).
 - Arrays: plural nouns (`users`, `items`).
 - Functions: verb phrases (`calculateTotal`, `fetchUser`).
@@ -39,13 +39,7 @@ Name by domain intent. Avoid names that say only the type or the mechanism, such
 
 ### Fix it upstream
 
-When a dependency the project or its owner maintains lacks something or gets it wrong, the fix goes upstream, and the project takes it from a release. A local workaround is temporary and is marked with the upstream issue it waits on:
-
-```ts
-// Workaround for <owner>/<repo>#123: <what it works around>.
-```
-
-Searching for the issue reference then finds every workaround to remove once the fix ships. A third-party dependency gets the same treatment where the project reports the problem upstream.
+When a dependency lacks something or gets it wrong, the fix goes upstream where the project can report it, and the project takes it from a release. A local workaround is temporary and names the issue it waits on, as [a defect found mid-task](../../CONTRIBUTING.md#a-defect-found-mid-task) describes. That holds for a third-party dependency as much as for one the project or its owner maintains; only the latter is fixed upstream by the project itself.
 
 ## Code
 
@@ -73,6 +67,7 @@ Exceptions: framework callbacks, test helpers, tiny local functions, and APIs wh
 - Prefer `unknown` to `any`. Validate `unknown` at the boundary before use.
 - Prefer interfaces for object shapes and type aliases for unions and intersections.
 - Use type-only imports when importing only types.
+- Prefer string-literal unions or `as const` objects to `enum`. `enum` is not erasable syntax: Node.js type stripping rejects it, so code that `tsc` and Vitest accept can fail when Node.js loads it. Tests of `enum` support are the exception. An earlier rule allowed `enum` and named its members in UPPER_SNAKE_CASE; it was replaced once code run by Node.js directly hit the rejection ([codenhub/codenhub@e3ae18df](https://github.com/codenhub/codenhub/commit/e3ae18df)).
 - Keep casts narrow and close to the boundary that justifies them.
 - Do not export types or values that are not part of the package or module API.
 
@@ -92,14 +87,30 @@ Exceptions: framework callbacks, test helpers, tiny local functions, and APIs wh
 - Do not log secrets, tokens, credentials, or private user data.
 - `console` is for examples, CLIs, debugging utilities, entrypoints reporting startup failures, and deliberate diagnostics. Casual logging is not a substitute for error handling.
 
+## Inputs, failures, and state
+
+Most review findings that hold up are about these, not about style: the [review study in codenhub/codenhub](https://github.com/codenhub/codenhub/blob/main/packages/skills/docs/internal/coding-skill-research.md) records the evidence.
+
+- Validate input from outside the code's control after it is converted, against the limits of what consumes it: `--timeout 1e308` passes "positive number" and becomes an infinite timer. Reject empty, whitespace-only, NaN, Infinity, and partial numbers such as `10s`.
+- When required input is missing or matches nothing, fail with a message naming it. A run whose required input was absent never reports success.
+- Update in-memory state only after a write succeeds, and never swallow a write error.
+- Apply a new option or fix to every path the same input or behavior flows through: each source of the value, sync and async variants, create and update, and every caller. Name any path left out, with the reason.
+- A hand-written parser rejects syntax it does not support, naming the file and line, instead of reading it as data.
+- Keep input order and any order a contract defines; sort output whose order is unspecified by a defined key with a tie-breaker.
+
 ## Testing
 
 - Test behavior, edge cases, and error paths, not just the happy path.
 - One behavior per test, with a descriptive name (`shouldReturnEmptyWhenNull`).
 - Unit tests sit next to the code they test.
-- Mock only real boundaries, such as the network, storage, the filesystem, timers, and browser APIs. Pure logic is tested directly.
+- Mock the network, timers, and browser APIs. Test code whose job is file or database access against a real temporary directory or database where practical, and mock them elsewhere. Pure logic is tested directly.
+- Give each behavior decision a test that fails when the decision is reversed, and see a new test fail before keeping it.
+- A test that writes files uses its own directory under the system temporary directory, never the package or the current directory, and removes it afterwards.
+- Poll for a condition instead of sleeping a fixed time.
 - Prefer observable behavior to implementation details.
 - A change in behavior changes its tests in the same change.
+
+Mocking the filesystem and storage everywhere was the earlier rule. It was narrowed because a mock answers only what the test tells it, so it cannot show the containment, symlink, and stale-output bugs recorded in codenhub/codenhub#24, codenhub/codenhub#25, and codenhub/codenhub#293; a real temporary directory does.
 
 The [testing specification](../specs/tests.md) defines the test categories, configuration, scripts, and coverage target.
 
@@ -108,7 +119,7 @@ The [testing specification](../specs/tests.md) defines the test categories, conf
 - Comments explain why, not what or how.
 - Remove redundant comments, decorations, and outdated docs, in the change that makes them outdated.
 
-Every symbol exported from a package entrypoint, through `package.json` `exports`, is that package's API and MUST have TSDoc in source, even when a README also documents it. That includes functions, classes and their public members, interfaces, type aliases, constants, and configuration objects. The TSDoc describes the caller-facing purpose, important inputs, return values or side effects, and observable failure. It MUST NOT restate the type signature in prose or describe private implementation details. Specifically, it:
+Every symbol exported from a published package's entrypoint, through `package.json` `exports`, is that package's API and MUST have TSDoc in source, even when a README also documents it. A private package's exports SHOULD have it too: their callers are the project's own code, which a reviewer can read, so a missing tag costs less there. That includes functions, classes and their public members, interfaces, type aliases, constants, and configuration objects. The TSDoc describes the caller-facing purpose, important inputs, return values or side effects, and observable failure. It MUST NOT restate the type signature in prose or describe private implementation details. Specifically, it:
 
 - Opens with a one-sentence summary of what the symbol does for the caller, in the present tense. Longer explanation goes in `@remarks`.
 - Documents every parameter and type parameter with `@param` and `@typeParam`, giving intent and any constraint, unit, or accepted range rather than the type. A `@param` MAY be left out only when the name already fixes the meaning exactly.
@@ -123,7 +134,13 @@ Every symbol exported from a package entrypoint, through `package.json` `exports
 
 An export needed only to compose entrypoints SHOULD stay out of public entrypoints. When one cannot, mark it `@internal`.
 
-When a change touches a package's `exports`, its exported symbols, or its observable behavior or failures, it updates the TSDoc and every README or document describing them in the same change. oxlint checks the structure of the tags; whether every export is documented, and how well, is a review responsibility.
+When a change touches a package's `exports`, its exported symbols, or its observable behavior or failures, it updates the TSDoc and every README or document describing them in the same change. oxlint checks the structure of the tags. Whether every export is documented, and how well, is a review responsibility unless the project enforces it, as the block below records.
+
+<!-- project:start -->
+
+<!-- How the project enforces or extends these TSDoc rules, such as a check that fails on an undocumented export, or the document that defines its package documentation. Leave empty when there is none. -->
+
+<!-- project:end -->
 
 ## Formatting, linting, and type checking
 

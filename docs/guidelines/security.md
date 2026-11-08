@@ -1,6 +1,6 @@
 ---
 status: APPROVED
-last_updated: 2026-11-02
+last_updated: 2026-11-08
 scope: How code keeps the project's security commitments, for anyone writing or reviewing a change.
 ---
 
@@ -15,6 +15,8 @@ This document says how code handles secrets, untrusted input, and what leaves th
 <!-- project:end -->
 
 ## Secrets
+
+When the project stores or issues secrets:
 
 - **Random values** for anything security-relevant come from a cryptographically secure source, such as `crypto.getRandomValues` or `crypto.randomUUID`, injected where code needs to be testable. Never `Math.random`.
 - **High-entropy tokens** the project issues, such as session ids, one-time codes, reset tokens, and API keys, are stored as a digest, never as the value. A leaked database then holds nothing a client can present.

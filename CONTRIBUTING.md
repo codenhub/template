@@ -58,7 +58,7 @@ It never deletes a label: deleting one strips it from every issue that carries i
 
 ### A defect found mid-task
 
-A defect hit while working on something else is filed and worked around, not fixed on the spot. Fixing it in place mixes two subjects in one branch, for the reason the [commit](#atomic-commits) and [pull request](#pull-requests) rules already reject.
+A defect hit while working on something else is filed and worked around, not fixed on the spot. Fixing it in place mixes two subjects in one branch, for the reason the [commit](#atomic-commits) and [pull request](#pull-requests) rules already reject, and where the fix ships as a release, it forces a release in the middle of unrelated work.
 
 File it with what triage needs, from the terminal:
 
@@ -82,7 +82,7 @@ Opening an issue is outward-facing. An agent drafts it and asks before filing, a
 
 Work happens on a branch. Do not commit to `main`.
 
-`main` is the branch CI verifies in full, so a commit that lands there directly is one nobody reviewed. A pre-push hook refuses to push to it.
+`main` is the branch CI verifies in full and, in a project that deploys from it, the one that deploys, so a commit that lands there directly is one nobody reviewed. A pre-push hook refuses to push to it.
 
 The exception is real but narrow: it takes an explicit request from a maintainer, in the moment, for that specific commit. An agent must ask and be told yes. Neither a general instruction to "just fix it" nor a previous approval carries over to the next commit.
 
@@ -117,7 +117,7 @@ One of `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `rever
 
 ### Scope
 
-The area the change lands in, and optional. For a workspace package it is the package name without its npm scope. For an app it is the directory name under `apps/`. Repository-level areas use their own name, such as `ci`, `deps`, or `docs`. Leave it out when the change spans several.
+The area the change lands in, and optional. For a workspace package it is the package name without its npm scope; for a package nested a level deeper, such as `packages/plugins/vite`, it is the path under `packages/`, as in `plugins/vite`. For an app it is the directory name under `apps/`. Repository-level areas use their own name, such as `ci`, `deps`, or `docs`. Leave it out when the change spans several.
 
 ### Subject
 
@@ -153,7 +153,7 @@ The human directing the work stays the commit author. The trailer is an addition
 
 ## Validation
 
-Run scripts from the repository root. During development, narrow checks to what changed, such as `pnpm test <file>`; [tooling](docs/tooling.md) lists the commands and how to narrow them. Before delivering a change, run the whole gate:
+Run scripts from the repository root. During development, narrow checks to what changed; [tooling](docs/tooling.md) lists the commands and how to narrow them. Before delivering a change, run the gate the block below names; by default, that is the whole gate:
 
 ```sh
 pnpm verify
@@ -163,7 +163,7 @@ It runs formatting, linting, the build, type checking, and tests, the same check
 
 <!-- project:start -->
 
-<!-- Checks `pnpm verify` does not run and when to run them, such as browser suites, or a check for a generated file. Leave the block empty when there are none. -->
+<!-- The gate before delivering a change when it is not plain `pnpm verify`, such as a run narrowed to changed packages that CI completes, and checks `pnpm verify` does not run and when to run them, such as browser suites or a check for a generated file. Leave the block empty when there are none. -->
 
 <!-- project:end -->
 
@@ -175,7 +175,7 @@ Pushing a branch and opening a pull request are outward-facing actions. An agent
 
 Keep a pull request to one subject. A branch that fixes a bug and also restructures a doc is two pull requests, for the same reason a commit that does both is two commits.
 
-A pull request that resolves an issue says `Fixes #123` in its description, so merging it closes the issue.
+A pull request that resolves an issue says `Fixes #123` in its description, so merging it closes the issue. Merging is not releasing: a fix reaches users with the next release.
 
 A pull request that builds on another unmerged one targets that one's branch and names it in its description. Merge them in order, the base first. GitHub then deletes the merged branch, with the setting [CI](docs/ci.md#branch-protection) recommends, and retargets the next pull request to `main`; merged out of order or before that retarget, it lands in the other branch instead of `main`.
 
@@ -203,4 +203,4 @@ Three hooks run locally, all from `.githooks/`:
 | `commit-msg` | The subject line shape described above                       |
 | `pre-push`   | Refuses a direct push to `main`, and a misnamed branch       |
 
-`--no-verify` bypasses them. It is for the commit that genuinely has to land unfixed, and an agent that reaches for it MUST say so in the same breath rather than quietly routing around a failing check. [Tooling](docs/tooling.md) describes what each hook does and why it does no more than that.
+`--no-verify` bypasses them. It is for the commit that genuinely has to land unfixed, and an agent that reaches for it MUST say so in the same breath rather than quietly routing around a failing check. [Workspace](docs/workspace.md#git-hooks) records why each hook does that much and no more.
