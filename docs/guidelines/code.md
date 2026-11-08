@@ -109,9 +109,14 @@ Most review findings that hold up are about these, not about style: the [review 
 - Test behavior, edge cases, and error paths, not just the happy path.
 - One behavior per test, with a descriptive name (`shouldReturnEmptyWhenNull`).
 - Unit tests sit next to the code they test.
-- Mock only real boundaries, such as the network, storage, the filesystem, timers, and browser APIs. Pure logic is tested directly.
+- Mock the network, timers, and browser APIs. Test code whose job is file or database access against a real temporary directory or database where practical, and mock them elsewhere. Pure logic is tested directly.
+- Give each behavior decision a test that fails when the decision is reversed, and see a new test fail before keeping it.
+- A test that writes files uses its own directory under the system temporary directory, never the package or the current directory, and removes it afterwards.
+- Poll for a condition instead of sleeping a fixed time.
 - Prefer observable behavior to implementation details.
 - A change in behavior changes its tests in the same change.
+
+Mocking the filesystem and storage everywhere was the earlier rule. It was narrowed because a mock answers only what the test tells it, so it cannot show the containment, symlink, and stale-output bugs recorded in codenhub/codenhub#24, codenhub/codenhub#25, and codenhub/codenhub#293; a real temporary directory does.
 
 The [testing specification](../specs/tests.md) defines the test categories, configuration, scripts, and coverage target.
 
