@@ -21,7 +21,7 @@ pnpm install
 
 `.nvmrc` pins Node.js, which `nvm use` reads, and the `packageManager` field in `package.json` pins pnpm, which pnpm installs before it runs. [CI](ci.md) covers why the versions are pinned where they are.
 
-`pnpm install` runs the root `prepare` script, which points git at `.githooks/` through `core.hooksPath`. If lifecycle scripts were disabled during the install, run `node .githooks/install.mjs`.
+`pnpm install` runs the root `prepare` script, which points git at `.githooks/` through `core.hooksPath`. If lifecycle scripts were disabled during the install, run `git config core.hooksPath .githooks`.
 
 ## Scripts
 
@@ -37,7 +37,7 @@ pnpm install
 | `pnpm test:coverage` | `vitest run --coverage`, with a V8 coverage report in `coverage/`.                          |
 | `pnpm build`         | `pnpm -r --if-present run build`. A package without a `build` script is skipped.            |
 | `pnpm verify`        | The checks above in the order [Workspace](workspace.md#root-scripts) gives.                 |
-| `pnpm prepare`       | `node .githooks/install.mjs`.                                                               |
+| `pnpm prepare`       | `git config core.hooksPath .githooks`, reporting rather than failing when git cannot.       |
 
 ## TypeScript and Vitest
 
