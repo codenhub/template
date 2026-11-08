@@ -1,7 +1,7 @@
 ---
 status: IMPLEMENTED
 last_updated: 2026-11-08
-scope: How the root scripts are implemented, the TypeScript and Vitest configuration, narrowing a run, and adding a package.
+scope: Setup, how the root scripts are implemented, the TypeScript and Vitest configuration, narrowing a run, and adding a package.
 ---
 
 # Tooling
@@ -9,6 +9,19 @@ scope: How the root scripts are implemented, the TypeScript and Vitest configura
 [Workspace](workspace.md) names the root scripts and what each one guarantees. This document is how this project implements them.
 
 Every script runs from the repository root. There is no workspace CLI: the scripts call pnpm, Vitest, `tsc`, oxlint, oxfmt and Prettier directly, so each one is a command a contributor can read in `package.json` and run on its own. A workspace that outgrows plain scripts adds a CLI as a package of its own; until then a wrapper would be one more thing to learn and to keep in step.
+
+Markdown is formatted by Prettier with `proseWrap: "never"`, set in `.prettierrc.json5`, and the files it leaves alone are listed in `.prettierignore`; [Workspace](workspace.md#two-formatters) says why Prettier, not oxfmt, owns Markdown.
+
+## Setup
+
+```sh
+nvm use
+pnpm install
+```
+
+`.nvmrc` pins Node.js, which `nvm use` reads, and the `packageManager` field in `package.json` pins pnpm, which pnpm installs before it runs. [CI](ci.md) covers why the versions are pinned where they are.
+
+`pnpm install` runs the root `prepare` script, which points git at `.githooks/` through `core.hooksPath`. If lifecycle scripts were disabled during the install, run `node .githooks/install.mjs`.
 
 ## Scripts
 

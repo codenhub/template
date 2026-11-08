@@ -38,24 +38,28 @@ Rejected alternatives:
 1. Copy the template's files into the new repository.
 2. Replace every placeholder:
 
-   | Placeholder       | Replaced with                                         | Example              |
-   | ----------------- | ----------------------------------------------------- | -------------------- |
-   | `{{name}}`        | The project's display name.                           | `Acme Notes`         |
-   | `{{slug}}`        | The repository and root package name.                 | `acme-notes`         |
-   | `{{scope}}`       | The npm scope of workspace packages, without the `@`. | `acme-notes`         |
-   | `{{description}}` | One sentence saying what the project is.              | `A note-taking app.` |
-   | `{{owner}}`       | The GitHub owner, a user or organization.             | `acme`               |
-   | `{{holder}}`      | The copyright holder.                                 | `Acme`               |
-   | `{{year}}`        | The year the project was created.                     | `2026`               |
+   | Placeholder       | Replaced with                                         | Example                        |
+   | ----------------- | ----------------------------------------------------- | ------------------------------ |
+   | `{{name}}`        | The project's display name.                           | `Acme Notes`                   |
+   | `{{slug}}`        | The repository and root package name.                 | `acme-notes`                   |
+   | `{{scope}}`       | The npm scope of workspace packages, without the `@`. | `acme-notes`                   |
+   | `{{description}}` | One sentence saying what the project is.              | `A note-taking app.`           |
+   | `{{owner}}`       | The GitHub owner, a user or organization.             | `acme`                         |
+   | `{{holder}}`      | The copyright holder.                                 | `Acme`                         |
+   | `{{year}}`        | The year the project was created.                     | `2026`                         |
+   | `{{setup}}`       | The stack's setup commands, one per line.             | `nvm use`, then `pnpm install` |
+   | `{{verify}}`      | The stack's delivery gate.                            | `pnpm verify`                  |
+
+   The last two belong to the stack. Their examples are the values for Node.js and pnpm, the stack this repository itself uses.
 
 3. Delete `.template/`.
 4. Check that no placeholder is left; this prints nothing when none is, and searches files not yet added to git too:
 
    ```sh
-   git grep --untracked -nE '\{\{(name|slug|scope|description|owner|holder|year)\}\}'
+   git grep --untracked -nE '\{\{(name|slug|scope|description|owner|holder|year|setup|verify)\}\}'
    ```
 
-5. Run `pnpm install` and `pnpm verify`.
+5. Run the setup commands and the gate.
 
 The HTML comments in the documents are prompts for what the project writes in each section; the [documentation guidelines](../docs/guidelines/documentation.md#prompts) say what to do with them, and stay in the project once this directory is gone.
 

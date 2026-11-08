@@ -34,11 +34,11 @@ Where a newcomer should start, and the project's overview documents, for example
 
 ## Repository references
 
-| Document                  | Contains                                                                                                         |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| [Workspace](workspace.md) | The root scripts and what each guarantees, the shared tool configurations, and dependency versions.              |
-| [Tooling](tooling.md)     | How the scripts are implemented, the TypeScript and Vitest configuration, narrowing a run, and adding a package. |
-| [CI](ci.md)               | The pinned toolchain, the verification jobs, and dependency updates.                                             |
+| Document                  | Contains                                                                                                                |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| [Workspace](workspace.md) | The root scripts and what each guarantees, the shared tool configurations, and dependency versions.                     |
+| [Tooling](tooling.md)     | Setup, how the scripts are implemented, the TypeScript and Vitest configuration, narrowing a run, and adding a package. |
+| [CI](ci.md)               | The pinned toolchain, the verification jobs, and dependency updates.                                                    |
 
 <!-- The project's own references for one repository area or process (for example assets or releases), as a table with the same columns. -->
 
