@@ -63,7 +63,13 @@ oxfmt formats everything it understands except Markdown; Prettier formats only M
 
 ### Versions
 
-Every dependency version is declared once, in the catalog in `pnpm-workspace.yaml`, and referred to as `catalog:` in each `package.json`. The workspace therefore cannot hold two versions of one dependency by accident, and an upgrade is a one-line change that Dependabot can propose ([CI](ci.md#dependency-updates)).
+Every third-party dependency version is declared once, in the catalog in `pnpm-workspace.yaml`, and referred to as `catalog:` in each `package.json`. The workspace therefore cannot hold two versions of one dependency by accident, and an upgrade is a one-line change that Dependabot can propose ([CI](ci.md#dependency-updates)). A workspace package depends on another as `workspace:*`, and a `peerDependencies` range says what a consumer may install, so neither is a catalog entry.
+
+<!-- project:start -->
+
+<!-- Version rules only this project has, such as installing a published workspace package from its release through the catalog. Leave the block empty when there are none. -->
+
+<!-- project:end -->
 
 ## Git hooks
 
