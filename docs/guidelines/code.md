@@ -13,7 +13,7 @@ This document outlines the patterns, conventions, and guidelines to follow when 
 - Files and folders: kebab-case (`user-service.ts`, `api-routes/`).
 - Variables and functions: camelCase (`getUserById`, `isValid`).
 - Classes and types: PascalCase (`UserService`, `ApiResponse`).
-- Constants and enums: UPPER_SNAKE_CASE (`MAX_RETRY_ATTEMPTS`).
+- Constants: UPPER_SNAKE_CASE (`MAX_RETRY_ATTEMPTS`).
 - Booleans: prefixed with is, has, can, or should (`isLoading`, `hasPermission`).
 - Arrays: plural nouns (`users`, `items`).
 - Functions: verb phrases (`calculateTotal`, `fetchUser`).
@@ -73,6 +73,7 @@ Exceptions: framework callbacks, test helpers, tiny local functions, and APIs wh
 - Prefer `unknown` to `any`. Validate `unknown` at the boundary before use.
 - Prefer interfaces for object shapes and type aliases for unions and intersections.
 - Use type-only imports when importing only types.
+- Prefer string-literal unions or `as const` objects to `enum`. `enum` is not erasable syntax: Node.js type stripping rejects it, so code that `tsc` and Vitest accept can fail when Node.js loads it. Tests of `enum` support are the exception. An earlier rule allowed `enum` and named its members in UPPER_SNAKE_CASE; it was replaced once code run by Node.js directly hit the rejection ([codenhub/codenhub@e3ae18df](https://github.com/codenhub/codenhub/commit/e3ae18df)).
 - Keep casts narrow and close to the boundary that justifies them.
 - Do not export types or values that are not part of the package or module API.
 
