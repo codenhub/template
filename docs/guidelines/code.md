@@ -119,7 +119,7 @@ The [testing specification](../specs/tests.md) defines the test categories, conf
 - Comments explain why, not what or how.
 - Remove redundant comments, decorations, and outdated docs, in the change that makes them outdated.
 
-Every symbol exported from a package entrypoint, through `package.json` `exports`, is that package's API and MUST have TSDoc in source, even when a README also documents it. That includes functions, classes and their public members, interfaces, type aliases, constants, and configuration objects. The TSDoc describes the caller-facing purpose, important inputs, return values or side effects, and observable failure. It MUST NOT restate the type signature in prose or describe private implementation details. Specifically, it:
+Every symbol exported from a published package's entrypoint, through `package.json` `exports`, is that package's API and MUST have TSDoc in source, even when a README also documents it. A private package's exports SHOULD have it too: their callers are the project's own code, which a reviewer can read, so a missing tag costs less there. That includes functions, classes and their public members, interfaces, type aliases, constants, and configuration objects. The TSDoc describes the caller-facing purpose, important inputs, return values or side effects, and observable failure. It MUST NOT restate the type signature in prose or describe private implementation details. Specifically, it:
 
 - Opens with a one-sentence summary of what the symbol does for the caller, in the present tense. Longer explanation goes in `@remarks`.
 - Documents every parameter and type parameter with `@param` and `@typeParam`, giving intent and any constraint, unit, or accepted range rather than the type. A `@param` MAY be left out only when the name already fixes the meaning exactly.
@@ -134,7 +134,13 @@ Every symbol exported from a package entrypoint, through `package.json` `exports
 
 An export needed only to compose entrypoints SHOULD stay out of public entrypoints. When one cannot, mark it `@internal`.
 
-When a change touches a package's `exports`, its exported symbols, or its observable behavior or failures, it updates the TSDoc and every README or document describing them in the same change. oxlint checks the structure of the tags; whether every export is documented, and how well, is a review responsibility.
+When a change touches a package's `exports`, its exported symbols, or its observable behavior or failures, it updates the TSDoc and every README or document describing them in the same change. oxlint checks the structure of the tags. Whether every export is documented, and how well, is a review responsibility unless the project enforces it, as the block below records.
+
+<!-- project:start -->
+
+<!-- How the project enforces or extends these TSDoc rules, such as a check that fails on an undocumented export, or the document that defines its package documentation. Leave empty when there is none. -->
+
+<!-- project:end -->
 
 ## Formatting, linting, and type checking
 
