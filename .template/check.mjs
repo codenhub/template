@@ -17,7 +17,19 @@ const CLASSES = new Set(["canonical", "blocks", "seed"]);
 // An extended regular expression, for git grep.
 const PLACEHOLDER = String.raw`\{\{(name|slug|scope|description|owner|holder|year)\}\}`;
 // A marker is a line of its own: a comment opener, the marker, and for HTML the closer.
-const MARKER = /^\s*(?:<!--|#|\/\/)\s*project:(start|end)\s*(?:-->)?\s*$/;
+// A malformed marker, such as `<!-- project:start` without its closer, is not one: it stays template text, so
+// the comparison reports it instead of it hiding the lines after it.
+const MARKER = /^\s*(?:<!--\s*project:(start|end)\s*-->|(?:#|\/\/)\s*project:(start|end))\s*$/;
+
+/**
+ * Says which marker a line is, if any.
+ * @param {string} line The line.
+ * @returns {"start" | "end" | undefined} The marker's kind.
+ */
+function markerKind(line) {
+  const match = MARKER.exec(line);
+  return match === null ? undefined : /** @type {"start" | "end"} */ (match[1] ?? match[2]);
+}
 const SHA = /^[0-9a-f]{40}$/;
 const REPOSITORY = /^[\w.-]+\/[\w.-]+$/;
 
@@ -53,7 +65,7 @@ export function markerProblems(text) {
   const problems = [];
   let openedAt = 0;
   for (const [index, line] of lines(text).entries()) {
-    const kind = MARKER.exec(line)?.[1];
+    const kind = markerKind(line);
     if (kind === "start") {
       if (openedAt !== 0) {
         problems.push(`line ${index + 1}: project:start inside the block opened at line ${openedAt}`);
@@ -94,7 +106,7 @@ export function templateLines(text, isDocument) {
   }
   let isInBlock = false;
   for (let index = next; index < all.length; index += 1) {
-    const kind = MARKER.exec(all[index])?.[1];
+    const kind = markerKind(all[index]);
     if (kind !== undefined) {
       isInBlock = kind === "start";
       kept.push({ text: all[index], line: index + 1 });
@@ -194,7 +206,8 @@ export function check({ cwd = process.cwd(), templateUrl } = {}) {
   const blocks = present.filter((path) => files[path] === "blocks");
   for (const path of blocks) {
     for (const problem of markerProblems(readFileSync(join(cwd, path), "utf8"))) {
-      report(path, `${path}: ${problem}`);
+      // Unconditional: an exception excuses a difference from the template, not a broken file.
+      problems.push(`${path}: ${problem}`);
     }
   }
 
@@ -211,27 +224,24 @@ export function check({ cwd = process.cwd(), templateUrl } = {}) {
     problems.push(`could not read ${url}: ${head.stderr || "no HEAD"}`);
     return { problems, notes };
   }
-  const fetch = (ref) => git(cwd, ["fetch", "--quiet", "--no-tags", "--no-write-fetch-head", url, ref]);
-  const hasCommit = (sha) => git(cwd, ["cat-file", "-e", `${sha}^{commit}`]).status === 0;
-  const fetched = fetch("HEAD");
+  const fetched = git(cwd, ["fetch", "--quiet", "--no-tags", "--no-write-fetch-head", url, "HEAD"]);
   if (fetched.status !== 0) {
     problems.push(`could not fetch ${url}: ${fetched.stderr}`);
     return { problems, notes };
   }
-  if (!hasCommit(synced) && (fetch(synced).status !== 0 || !hasCommit(synced))) {
-    problems.push(`${MANIFEST}: synced ${synced} is not a commit of ${url}`);
+  // `synced` counts only in the history of the template's default branch, which is where a sync takes it
+  // from. A commit already in this repository proves nothing about the template, and fetching it by SHA
+  // cannot prove more: git skips the fetch of an object it already has.
+  if (git(cwd, ["merge-base", "--is-ancestor", synced, headSha]).status !== 0) {
+    problems.push(`${MANIFEST}: synced ${synced} is not in the history of ${url}'s default branch`);
     return { problems, notes };
   }
-  if (git(cwd, ["merge-base", "--is-ancestor", synced, headSha]).status === 0) {
-    const behind = Number(git(cwd, ["rev-list", "--count", `${synced}..${headSha}`]).stdout.trim());
-    notes.push(
-      behind === 0
-        ? `Up to date with ${manifest.template} at ${headSha.slice(0, 7)}.`
-        : `${behind} commit(s) behind ${manifest.template}: ${synced.slice(0, 7)}..${headSha.slice(0, 7)}.`,
-    );
-  } else {
-    notes.push(`synced ${synced.slice(0, 7)} is not on ${manifest.template}'s default branch.`);
-  }
+  const behind = Number(git(cwd, ["rev-list", "--count", `${synced}..${headSha}`]).stdout.trim());
+  notes.push(
+    behind === 0
+      ? `Up to date with ${manifest.template} at ${headSha.slice(0, 7)}.`
+      : `${behind} commit(s) behind ${manifest.template}: ${synced.slice(0, 7)}..${headSha.slice(0, 7)}.`,
+  );
 
   const theirs = git(cwd, ["show", `${synced}:${MANIFEST}`]);
   /** @type {Record<string, string>} */
@@ -293,7 +303,7 @@ export function check({ cwd = process.cwd(), templateUrl } = {}) {
     (path) => files[path] !== "canonical" && existsSync(join(cwd, path)),
   );
   if (placeholderFiles.length > 0) {
-    const found = git(cwd, ["grep", "-nIE", PLACEHOLDER, "--", ...placeholderFiles]);
+    const found = git(cwd, ["grep", "--untracked", "-nIE", PLACEHOLDER, "--", ...placeholderFiles]);
     for (const match of found.stdout.split("\n").filter(Boolean)) {
       const [path, line] = match.split(":");
       problems.push(`${path}:${line}: placeholder left behind`);

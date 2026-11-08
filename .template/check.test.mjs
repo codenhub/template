@@ -180,7 +180,44 @@ describe("check", () => {
     const { project, run } = setUp();
     write(project, { ".template/manifest.json": manifest({ synced: "0".repeat(40) }) });
 
-    expect(run().problems).toEqual([expect.stringMatching(/synced 0{40} is not a commit of/)]);
+    expect(run().problems).toEqual([expect.stringMatching(/synced 0{40} is not in the history of/)]);
+  });
+
+  it("reports a synced commit that exists only in the project", () => {
+    const { project, run } = setUp();
+    const local = git(project, "rev-parse", "HEAD");
+    write(project, { ".template/manifest.json": manifest({ synced: local }) });
+
+    expect(run().problems).toEqual([expect.stringMatching(new RegExp(`synced ${local} is not in the history of`))]);
+  });
+
+  it("reports a placeholder in a file not yet committed", () => {
+    const { project, run } = setUp();
+    git(project, "rm", "--quiet", "--cached", "README.md");
+    write(project, { "README.md": `# ${placeholder("name")}\n` });
+
+    expect(run().problems).toEqual(["README.md:1: placeholder left behind"]);
+  });
+
+  it("reports unbalanced markers even in a file listed in exceptions", () => {
+    const { project, synced, run } = setUp();
+    write(project, {
+      ".template/manifest.json": manifest({ synced, exceptions: { "AGENTS.md": "Acme rewrote it." } }),
+      "AGENTS.md": "# Acme\n\n<!-- project:start -->\n",
+    });
+
+    expect(run().problems).toEqual(["AGENTS.md: line 3: project:start is never closed"]);
+  });
+
+  it("reports a malformed marker as a difference instead of hiding the text after it", () => {
+    const { project, run } = setUp();
+    write(project, {
+      "AGENTS.md": TEMPLATE_FILES["AGENTS.md"]
+        .replace("<!-- project:start -->", "<!-- project:start")
+        .replace("<!-- project:end -->", "<!-- project:end"),
+    });
+
+    expect(run().problems).toEqual(["AGENTS.md:7: differs from the template's text outside the project blocks"]);
   });
 
   it("reports a template it cannot reach", () => {
@@ -222,6 +259,7 @@ describe("markerProblems", () => {
 
   it("ignores a marker quoted in prose", () => {
     expect(markerProblems("Open a block with `<!-- project:start -->`.\n")).toEqual([]);
+    expect(markerProblems("<!-- project:start\n# project:end -->\n")).toEqual([]);
   });
 });
 

@@ -72,7 +72,7 @@ A project that deliberately departs from a `canonical` or `blocks` file, or does
 }
 ```
 
-An exception excuses that file's differences from the template, including its absence. It does not excuse a placeholder left behind or a `files` map that disagrees with the template's. A `seed` file needs no exception: the project already owns it. An exception whose file matches the template again fails the check, so it is removed once the reason is gone.
+An exception excuses that file's differences from the template, including its absence. It does not excuse a placeholder left behind, unbalanced markers, or a `files` map that disagrees with the template's. A `seed` file needs no exception: the project already owns it. An exception whose file matches the template again fails the check, so it is removed once the reason is gone.
 
 ## Checking
 
@@ -86,9 +86,9 @@ An exception excuses that file's differences from the template, including its ab
 - `core.hooksPath` not set to `.githooks`;
 - an exception that is no longer needed.
 
-It also reports how many commits the template is ahead of `synced`, without failing on it: a template change reaches the project when someone syncs, not when CI notices it. It fetches the template, so it needs the network; it adds no remote, ref, or `FETCH_HEAD`. With `synced` still `null`, as in the template itself, it checks only the manifest, the files, and the markers. CI runs it on every change.
+It also reports how many commits the template is ahead of `synced`, without failing on it: a template change reaches the project when someone syncs, not when CI notices it. It fetches the template, so it needs the network; it adds no remote, ref, or `FETCH_HEAD`. With `synced` still `null`, as in the template itself, it checks only the manifest, the files, and the markers. The `Verify` job runs it whenever CI runs: on pull requests and merge-queue checks, and on pushes to `main` unless the project removed that trigger.
 
-Each failure has one of three resolutions: sync, when the template changed; propose the change to the template, when the project improved a template-owned text; or list the file in `exceptions`, when the project departs from it on purpose.
+A difference from the template has one of three resolutions: sync, when the template changed; propose the change to the template, when the project improved a template-owned text; or list the file in `exceptions`, when the project departs from it on purpose. The other failures, a malformed manifest, broken markers, a placeholder, `core.hooksPath`, or an exception no longer needed, are fixed in the project.
 
 ## Syncing
 
