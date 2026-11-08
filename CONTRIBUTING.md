@@ -58,7 +58,7 @@ It never deletes a label: deleting one strips it from every issue that carries i
 
 ### A defect found mid-task
 
-A defect hit while working on something else is filed and worked around, not fixed on the spot. Fixing it in place mixes two subjects in one branch, for the reason the [commit](#atomic-commits) and [pull request](#pull-requests) rules already reject.
+A defect hit while working on something else is filed and worked around, not fixed on the spot. Fixing it in place mixes two subjects in one branch, for the reason the [commit](#atomic-commits) and [pull request](#pull-requests) rules already reject, and where the fix ships as a release, it forces a release in the middle of unrelated work.
 
 File it with what triage needs, from the terminal:
 
@@ -82,7 +82,7 @@ Opening an issue is outward-facing. An agent drafts it and asks before filing, a
 
 Work happens on a branch. Do not commit to `main`.
 
-`main` is the branch CI verifies in full, so a commit that lands there directly is one nobody reviewed. A pre-push hook refuses to push to it.
+`main` is the branch CI verifies in full and, in a project that deploys from it, the one that deploys, so a commit that lands there directly is one nobody reviewed. A pre-push hook refuses to push to it.
 
 The exception is real but narrow: it takes an explicit request from a maintainer, in the moment, for that specific commit. An agent must ask and be told yes. Neither a general instruction to "just fix it" nor a previous approval carries over to the next commit.
 
@@ -175,7 +175,7 @@ Pushing a branch and opening a pull request are outward-facing actions. An agent
 
 Keep a pull request to one subject. A branch that fixes a bug and also restructures a doc is two pull requests, for the same reason a commit that does both is two commits.
 
-A pull request that resolves an issue says `Fixes #123` in its description, so merging it closes the issue.
+A pull request that resolves an issue says `Fixes #123` in its description, so merging it closes the issue. Merging is not releasing: a fix reaches users with the next release.
 
 A pull request that builds on another unmerged one targets that one's branch and names it in its description. Merge them in order, the base first. GitHub then deletes the merged branch, with the setting [CI](docs/ci.md#branch-protection) recommends, and retargets the next pull request to `main`; merged out of order or before that retarget, it lands in the other branch instead of `main`.
 
