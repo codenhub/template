@@ -20,7 +20,7 @@ Rejected: **one template repository per stack.** Each would be simpler alone, bu
 
 ### Profile values fill the core
 
-The core never names a stack's command; it holds a placeholder that creation fills, as it fills `{{name}}`. A profile declares a value for each: `{{setup}}`, the setup commands, and `{{verify}}`, the delivery gate. `AGENTS.md`, `CONTRIBUTING.md`, the pull request template, and the README then show the real command in a created project. Anything about the stack beyond those values, such as where versions are pinned or how the hooks are set up by hand, is in the profile's `docs/tooling.md`, a document every profile provides and the core links to.
+The core never names a stack's command; it holds a placeholder that creation fills, as it fills `{{name}}`. A profile declares a value for each: `{{setup}}`, the setup commands, and `{{verify}}`, the delivery gate. `AGENTS.md`, `CONTRIBUTING.md`, the pull request template, and the README then show the real command in a created project. Anything about the stack beyond those values, such as where versions are pinned or how the hooks are set up by hand, is in the profile's documents.
 
 Until the profiles exist, the values are listed with the other placeholders in [the README](README.md#creating-a-project), and this repository is filled with `node-pnpm`'s wherever it is not a placeholder.
 
@@ -50,6 +50,21 @@ Rejected: **a second profile now,** to prove the core is neutral. A profile nobo
 
 The core does not fix `apps/` + `packages/`. A project is a single package or a workspace whose members it declares, and the core defines commit scopes and the `pkg:` and `app:` labels in terms of those declared members. `node-pnpm` keeps `apps/*` and `packages/*` as its default member globs.
 
+### Profile documents have fixed paths
+
+Every profile provides the same four documents, at the same paths, so the core and its index link to them without knowing the stack:
+
+| Path                        | Holds                                                                                    |
+| --------------------------- | ---------------------------------------------------------------------------------------- |
+| `docs/workspace.md`         | What each check guarantees, the configuration files, the pinned toolchain, and installs. |
+| `docs/tooling.md`           | Setup, how the checks are implemented, narrowing a run, and adding a member.             |
+| `docs/guidelines/stack.md`  | The conventions of the stack's languages, on top of `docs/guidelines/code.md`.           |
+| `docs/specs/stack-tests.md` | How the categories in `docs/specs/tests.md` run: runners, file names, scripts, commands. |
+
+A document's title names the stack, as "TypeScript guidelines" does; only its path is fixed. A core document says what holds in any language and links to the profile's document for the rest, and states a rule once, in whichever of the two owns it.
+
+Rejected: **documents named after the stack,** such as `docs/guidelines/typescript.md`. The name says more, but the core's links and the index would then differ per profile, which would make them profile values too, or make the index the profile's.
+
 ### A file lives in one place
 
 A file that holds both core content and stack content, such as `.gitignore`, `.editorconfig`, `.github/dependabot.yml`, and `.github/workflows/ci.yml`, belongs whole to the profile. Nothing merges two files, so what a project gets is a copy of a file, and what it compares with is that file.
@@ -66,7 +81,7 @@ These are answered while implementing, each recorded here before the change that
 
 ## Inventory
 
-Where each file goes. "Split" means the file's general part stays in the core and its stack part moves to a profile document.
+Where each file goes.
 
 | File                                                                                                                                         | Goes to          |
 | -------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
@@ -77,9 +92,8 @@ Where each file goes. "Split" means the file's general part stays in the core an
 | `.githooks/install.mjs`                                                                                                                      | Removed          |
 | `.githooks/profile.sh`                                                                                                                       | `node-pnpm`      |
 | `docs/README.md`, `docs/guidelines/documentation.md`, `docs/guidelines/security.md`, `docs/guidelines/brand.md`                              | Core             |
-| `docs/guidelines/code.md`                                                                                                                    | Split            |
-| `docs/specs/tests.md`, `docs/ci.md`                                                                                                          | Split            |
-| `docs/workspace.md`, `docs/tooling.md`                                                                                                       | `node-pnpm`      |
+| `docs/guidelines/code.md`, `docs/specs/tests.md`, `docs/ci.md`                                                                               | Core             |
+| `docs/workspace.md`, `docs/tooling.md`, `docs/guidelines/stack.md`, `docs/specs/stack-tests.md`                                              | `node-pnpm`      |
 | `.gitignore`, `.editorconfig`, `.github/dependabot.yml`, `.github/workflows/ci.yml`, `.github/actions/setup/`                                | `node-pnpm`      |
 | `package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`, `.nvmrc`, `.oxfmtrc.json`, `.oxlintrc.json`, `.prettierrc.json5`, `.prettierignore` | `node-pnpm`      |
 | `tsconfig.base.json`, `tsconfig.json`, `tsconfig.root.json`, `vitest.config.ts`, `apps/`, `packages/`                                        | `node-pnpm`      |
@@ -90,6 +104,6 @@ Each step is its own pull request, and each leaves the template working:
 
 1. **Neutral wording in place.** The core's documents hold `{{setup}}` and `{{verify}}` where they named pnpm commands, and describe the layout through declared members, with no file moved yet. `pnpm verify` still runs at the root.
 2. **Hooks.** `pre-commit` becomes the dispatcher, reading the Node commands from `.githooks/profile.sh`; `install.mjs` is replaced by `git config core.hooksPath .githooks`, run from `pnpm prepare`.
-3. **Split the documents.** The general parts of `code.md`, `tests.md`, and `ci.md` stay; their TypeScript, Vitest, and pnpm parts move to profile documents, still at the root.
+3. **Split the documents.** The general parts of `code.md`, `tests.md`, and `ci.md` stay; their TypeScript, Vitest, and pnpm parts move to `docs/guidelines/stack.md`, `docs/specs/stack-tests.md`, and `docs/workspace.md`, still at the root.
 4. **Assembly and self-verification.** The script that assembles core and profile, used by the template's CI, by creation, and by comparison.
 5. **Move `node-pnpm` into `profiles/node-pnpm/`,** update `.template/README.md` for creation and comparison with a profile, and the `project-template` skill with it.
