@@ -16,6 +16,10 @@ The template is brand-agnostic. It carries structure, tooling, and the general g
 
 A file the manifest does not list belongs to the project.
 
+`manifest.json#template` names the template repository as `owner/repo`, the one a sync fetches from.
+
+The frontmatter values of a `blocks` document belong to the project, as if the frontmatter were a block: `status`, `last_updated`, and `scope` describe this project's copy, such as whether its code complies and when it last changed, so a sync keeps the project's values. The fields themselves are set by the [documentation guidelines](../docs/guidelines/documentation.md).
+
 ## Project blocks
 
 A project block opens and closes with a marker in the file's own comment syntax:
