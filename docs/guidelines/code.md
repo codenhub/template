@@ -69,7 +69,7 @@ Exceptions: framework callbacks, test helpers, tiny local functions, and APIs wh
 
 ## TypeScript
 
-- Use strict TypeScript; `tsconfig.json` sets the flags.
+- Use strict TypeScript; `tsconfig.base.json` sets the flags.
 - Prefer `unknown` to `any`. Validate `unknown` at the boundary before use.
 - Prefer interfaces for object shapes and type aliases for unions and intersections.
 - Use type-only imports when importing only types.
