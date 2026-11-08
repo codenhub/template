@@ -50,7 +50,7 @@ Manual usage scenarios, such as a playground used during development, are outsid
 
 ## Configuration
 
-- The root Vitest configuration runs every workspace project in one process. A package or app that needs custom options, such as path aliases, environment variables, plugins, or a DOM environment, MUST include its own explicit configuration file (`vitest.config.ts` or `playwright.config.ts`). Do not rely on implicit or undocumented fallback behavior.
+- A package or app that needs custom options, such as path aliases, environment variables, plugins, or a DOM environment, MUST include its own explicit configuration file, `vitest.config.ts` or `playwright.config.ts`, and not `vite.config.ts`: a runner that discovers packages by their `vitest.config.ts` would silently leave one configured through `vite.config.ts` out of `pnpm test`. Do not rely on implicit or undocumented fallback behavior. How the runs are put together is [tooling](../tooling.md)'s.
 - Test scripts MUST NOT chain their own build step. Build ordering belongs to the root tooling, as [Tooling](../tooling.md) describes.
 - A package that defines its own test scripts uses the root names and meanings:
   - `test`: runs unit and integration tests once, and nothing that needs a browser.
