@@ -33,6 +33,13 @@ Project-specific text.
 # project:end
 ```
 
+```jsonc
+// project:start
+// project:end
+```
+
+Plain JSON has no comments and cannot hold a block, so a JSON file that needs one is either read as JSONC by its tool, as `.oxlintrc.json` and `.oxfmtrc.json` are, or written in a format with comments, as `.prettierrc.json5` is. In a list or an object, the block opens it, before the template's entries: oxfmt removes the trailing comma after the last entry, so a block after it would need an edit outside the block to add the first project entry. A later duplicate key wins, so a block that opens an object adds keys and does not change the template's.
+
 A block in the template holds placeholder guidance for what the project puts there. A file may have several blocks; they do not nest. A block the project leaves empty stays in the file, so a later sync knows where project text goes.
 
 ## Placeholders
