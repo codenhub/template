@@ -10,11 +10,11 @@ This document defines how the documentation in this repository is structured, ma
 
 ## Required header
 
-Every document in `docs/` MUST start with YAML frontmatter containing these fields, in this order:
+Every document in `docs/` MUST start with YAML frontmatter containing `status` and `last_updated`, and `scope` unless the title alone makes it clear, in this order:
 
 - `status`: how reliable and authoritative the document is.
 - `last_updated`: the date of the last meaningful content change, in `YYYY-MM-DD` format.
-- `scope`: what the document governs. It MAY be left out when the title alone makes that clear.
+- `scope`: what the document governs.
 
 Allowed statuses:
 
@@ -185,4 +185,4 @@ Guardrails:
 - **One wink, not a stand-up set.** A light touch every few paragraphs is enough. If a joke needs explaining or has to be forced in, cut it.
 - **Leave existing tone to its owner.** A writer does not change the tone of existing text, adding jokes to it or sanding them off, without the approval of whoever owns that text. Fix what is wrong or unclear; keep the voice it was written in.
 
-A project's [brand guideline](brand.md) MAY refine this voice: move it toward formal or toward playful, add principles and words to use or avoid, and set the voice for surfaces this section does not cover, such as a website or marketing copy. Where the two differ on tone, the brand guideline wins for that project. The guardrails above hold either way.
+A project's brand guideline, when it has one, MAY refine this voice: move it toward formal or toward playful, extend it to other documents, add principles and words to use or avoid, and set the voice for surfaces this section does not cover, such as a website or marketing copy. Where the two differ on tone, the brand guideline wins for that project. The guardrails above hold either way. The [documentation index](../README.md) links it.
