@@ -24,6 +24,8 @@
     ".prettierignore": "blocks",
     ".prettierrc.json5": "blocks",
     ".template/README.md": "canonical",
+    ".template/check.mjs": "canonical",
+    ".template/check.test.mjs": "canonical",
     "AGENTS.md": "blocks",
     "CLAUDE.md": "canonical",
     "CONTRIBUTING.md": "blocks",
