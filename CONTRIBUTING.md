@@ -203,4 +203,4 @@ Three hooks run locally, all from `.githooks/`:
 | `commit-msg` | The subject line shape described above                       |
 | `pre-push`   | Refuses a direct push to `main`, and a misnamed branch       |
 
-`--no-verify` bypasses them. It is for the commit that genuinely has to land unfixed, and an agent that reaches for it MUST say so in the same breath rather than quietly routing around a failing check. [Tooling](docs/tooling.md) describes what each hook does and why it does no more than that.
+`--no-verify` bypasses them. It is for the commit that genuinely has to land unfixed, and an agent that reaches for it MUST say so in the same breath rather than quietly routing around a failing check. [Workspace](docs/workspace.md#git-hooks) records why each hook does that much and no more.
