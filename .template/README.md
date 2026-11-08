@@ -78,13 +78,14 @@ To take the template's version of a whole file, run `git checkout FETCH_HEAD -- 
 
 ## Projects from the manifest design
 
-A project created before this design still has its ties. Removing them changes no behavior:
+A project created before this design still has its ties. Removing them changes nothing the project's code does; CI stops checking for drift from the template, which is the point:
 
 1. Delete `.template/`, including `manifest.json` and `check.mjs`.
 2. Delete each `project:start` and `project:end` marker line, keeping the text between them: it is the project's.
 3. In `.github/workflows/ci.yml`, delete the `Template conformance` step, which runs the deleted checker and would fail.
 4. In `AGENTS.md`, delete the rule about files listed in `.template/manifest.json`; in `tsconfig.root.json` and `vitest.config.ts`, delete the `.template/*.mjs` entries.
-5. Run `pnpm verify`.
+5. Update or remove text that describes the old design, such as the paragraph in `docs/ci.md` about the conformance step and the hint comments that say to leave a block empty.
+6. Run `pnpm verify`.
 
 This prints nothing once no marker or reference is left:
 
