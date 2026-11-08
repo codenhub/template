@@ -19,7 +19,7 @@ nvm use
 pnpm install
 ```
 
-`.nvmrc` pins Node.js, which `nvm use` reads, and the `packageManager` field in `package.json` pins pnpm, which pnpm installs before it runs. [CI](ci.md) covers why the versions are pinned where they are.
+`.nvmrc` pins Node.js, which `nvm use` reads, and the `packageManager` field in `package.json` pins pnpm, which pnpm installs before it runs. [Workspace](workspace.md#toolchain) covers why the versions are pinned where they are.
 
 `pnpm install` runs the root `prepare` script, which points git at `.githooks/` through `core.hooksPath`. If lifecycle scripts were disabled during the install, run `git config core.hooksPath .githooks`.
 

@@ -1,47 +1,26 @@
 ---
 status: IMPLEMENTED
 last_updated: 2026-11-08
-scope: The pinned toolchain, dependency installs, the CI workflow, action pinning, and dependency updates.
+scope: The CI workflow, the shared setup action, action pinning, dependency updates, and branch protection.
 ---
 
 # Continuous integration
 
-`.github/workflows/ci.yml` verifies every pull request, every merge-queue check, and, unless the project requires a merge queue, every push to `main`. It runs the same script a contributor runs locally, `pnpm verify`, so a green run means `verify` passed rather than that some CI-only approximation of it did. [Workspace](workspace.md) says what each script guarantees.
+`.github/workflows/ci.yml` verifies every pull request, every merge-queue check, and, unless the project requires a merge queue, every push to `main`. It runs the same gate a contributor runs locally, `{{verify}}`, so a green run means the gate passed rather than that some CI-only approximation of it did. [Workspace](workspace.md) says what each check guarantees.
 
 ## Toolchain
 
-Local and CI runs resolve the same versions, each declared once:
+Local and CI runs resolve the same versions, each declared once, and CI reads those same declarations rather than repeating a version. A version is raised in one place, and a machine that cannot satisfy it is told at install time instead of failing later in a way nobody can reproduce. [Workspace](workspace.md#toolchain) lists where each version is declared.
 
-| Where                                | Declares                                        |
-| ------------------------------------ | ----------------------------------------------- |
-| `package.json` `engines`             | The Node.js and pnpm range every run must meet  |
-| `package.json` `packageManager`      | The exact pnpm version pnpm installs itself     |
-| `.nvmrc`                             | The exact Node.js version, read by `nvm` and CI |
-| `pnpm-workspace.yaml` `engineStrict` | Makes an install outside `engines` fail         |
-
-CI reads those same files rather than repeating a version: `pnpm/action-setup` takes pnpm from `packageManager`, and `actions/setup-node` takes Node.js from `.nvmrc`. A version is raised in one place, and a machine that cannot satisfy it is told at install time instead of failing later in a way nobody can reproduce.
-
-`engineStrict` is deliberate friction. A patch-level difference rarely matters, and the one time it does, the failure looks like a bug in the change under review rather than a difference in the runtime.
-
-Workspace setup, pnpm, Node.js and a `--frozen-lockfile` install, lives in the composite action `.github/actions/setup`, so every job that needs the workspace sets it up the same way. A lockfile that disagrees with the manifests fails the install rather than being rewritten in CI.
-
-### Dependency installs
-
-`pnpm-workspace.yaml` holds the pnpm settings that govern installs, locally and in CI alike:
-
-- `blockExoticSubdeps: true` refuses a transitive dependency that resolves to a git repository or a tarball URL instead of the registry. A direct dependency's source is written in `package.json`, where a reviewer sees it; a transitive one would arrive through another package's manifest unseen.
-- `trustPolicy: no-downgrade` refuses a version whose publish-time trust evidence, such as provenance or trusted publishing, is weaker than that of an earlier version of the same package. A release that drops its provenance is a common sign of a compromised publish.
-- `trustPolicyIgnoreAfter: 10080` is an age in minutes, seven days, after which a version is no longer held to the trust policy. It stops a long-published version that predates provenance from being refused as a downgrade, while a fresh release, the one a compromise would be, is still checked. When one recent version must be let through, `trustPolicyExclude` names that exact version, with the reason in a comment and the condition for removing it.
-- `allowBuilds` lists the only dependencies whose install scripts run. It starts empty: the workspace's own tools ship their native binaries as optional dependencies and need none. A dependency that needs one, such as `esbuild`, gets an entry in the same change, with the reason.
-- pnpm's default `minimumReleaseAge` holds back a version published less than a day ago, so a compromised release is usually caught and pulled before it can be installed here. A version needed sooner goes in `minimumReleaseAgeExclude`, by exact version, and leaves it once it is old enough.
+Setup, the toolchain and an install from the lockfile, lives in the composite action `.github/actions/setup`, so every job that needs the project sets it up the same way. A lockfile that disagrees with the manifests fails the install rather than being rewritten in CI.
 
 ## The workflow
 
 <!-- The workflow's jobs. A project that adds jobs or changes what `Verify` runs updates the table. -->
 
-| Job      | Runner          | Runs                                                 |
-| -------- | --------------- | ---------------------------------------------------- |
-| `Verify` | `ubuntu-latest` | `pnpm verify`, then the `Working tree is clean` step |
+| Job      | Runner          | Runs                                                |
+| -------- | --------------- | --------------------------------------------------- |
+| `Verify` | `ubuntu-latest` | `{{verify}}`, then the `Working tree is clean` step |
 
 By default there is no change-based selection: every run checks the whole workspace. A check that skips part of the workspace on a pull request lets that part reach `main` unverified, and a selection has to be maintained and can be wrong in ways a green run hides. A project whose full run grows too slow to wait for adds selection then, under three rules:
 
@@ -57,7 +36,7 @@ Runs for the same pull request cancel each other, because only the newest push i
 
 ## Changing the workflow
 
-Prefer adding a script to `package.json` over adding a step to the workflow. A step only CI can run is a step nobody can reproduce before pushing, and that is how CI turns into a second build system.
+Prefer adding a check to the gate over adding a step to the workflow. A step only CI can run is a step nobody can reproduce before pushing, and that is how CI turns into a second build system.
 
 ### Pinning third-party actions
 
@@ -81,11 +60,11 @@ gh api repos/actions/checkout/commits/v7.0.1 --jq .sha
 
 ## Dependency updates
 
-`.github/dependabot.yml` proposes weekly updates for the GitHub Actions, including the composite actions under `.github/actions/`, and for npm, where an update arrives as a catalog change in `pnpm-workspace.yaml` with the lockfile. It moves an action's SHA and its version comment together, so a pin and its label cannot drift apart. Every update pull request is labelled `type:chore`.
+`.github/dependabot.yml` proposes weekly updates for the GitHub Actions, including the composite actions under `.github/actions/`, and for the stack's dependencies, as [Workspace](workspace.md#versions) describes. It moves an action's SHA and its version comment together, so a pin and its label cannot drift apart. Every update pull request is labelled `type:chore`.
 
 The groups take minor and patch updates only, so a week is one grouped pull request per ecosystem and directory. Dependabot groups each listed directory on its own, so the workflows and `.github/actions/*` can each get one: two pull requests for the actions in one week is the configuration working, not a duplicate. A major update arrives as a pull request of its own: it is a decision that may need code changes, and inside a group it would hold the routine updates back until it is dealt with.
 
-`@types/node` never takes a major update from Dependabot. Node's types follow the Node.js release in `engines` and `.nvmrc`, and types for a newer Node accept APIs the pinned runtime does not have; they move by hand, with `.nvmrc`. A dependency held back for a known breakage gets an `ignore` entry with the reason and the condition for removing it.
+A dependency held back for a known breakage gets an `ignore` entry with the reason and the condition for removing it.
 
 Renovate does the same job, and was rejected: it runs as a GitHub App with a configuration of its own, while Dependabot is built into GitHub and already raises the repository's security updates.
 
