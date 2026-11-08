@@ -78,7 +78,7 @@ Exceptions: framework callbacks, test helpers, tiny local functions, and APIs wh
 
 ## Modules and imports
 
-- Prefer named exports.
+- Prefer named exports, except where a tool or framework requires a default export, such as config files or framework routes.
 - Use barrel files only as package or folder entrypoints.
 - Do not deep-import another package's internals unless the subpath is part of its `exports`.
 - Keep dependency direction clear: shared code does not import app-specific code.
