@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync, unlinkSync } from "node:fs";
+import { chmodSync, cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync, unlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 
@@ -188,6 +188,14 @@ describe("check", { timeout: 60_000 }, () => {
   it("reports a blocks file whose mode differs from the template's, as for a hook that lost its executable bit", () => {
     const { project, synced, run } = setUp();
     git(project, "update-index", "--chmod=+x", "AGENTS.md");
+
+    expect(run().problems).toEqual([`AGENTS.md: mode 100755, but the template at ${synced.slice(0, 7)} has 100644`]);
+  });
+
+  // Windows keeps no executable bit in the working tree, so git reads the mode from the index there.
+  it.skipIf(process.platform === "win32")("reports a mode changed only in the working tree", () => {
+    const { project, synced, run } = setUp();
+    chmodSync(join(project, "AGENTS.md"), 0o755);
 
     expect(run().problems).toEqual([`AGENTS.md: mode 100755, but the template at ${synced.slice(0, 7)} has 100644`]);
   });

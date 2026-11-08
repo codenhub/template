@@ -85,16 +85,21 @@ export function markerProblems(text) {
 }
 
 /**
- * Reads each path's mode from the NUL-separated output of `git ls-tree -z` or `git ls-files -s -z`, both of
- * which start an entry with the mode and end it with a tab and the path.
+ * Lists the paths whose mode changed in the output of `git diff --raw -z`, where each entry is
+ * `:<old mode> <new mode> <old sha> <new sha> <status>` followed by its path, NUL-separated. A file added or
+ * deleted has a zero mode on one side; the missing-file check reports it instead.
  * @param {string} output The git output.
- * @returns {Map<string, string>} Each path's mode, such as `100755`.
+ * @returns {{ path: string, theirs: string, ours: string }[]} Each changed path and both modes.
  */
-function modes(output) {
-  const result = new Map();
-  for (const entry of output.split("\0").filter(Boolean)) {
-    const tab = entry.indexOf("\t");
-    result.set(entry.slice(tab + 1), entry.slice(0, entry.indexOf(" ")));
+function modeChanges(output) {
+  const fields = output.split("\0");
+  const result = [];
+  for (let index = 0; index + 1 < fields.length; index += 2) {
+    const [theirs = "", ours = ""] = (fields[index] ?? "").slice(1).split(" ");
+    const path = fields[index + 1] ?? "";
+    if (theirs !== ours && theirs !== "000000" && ours !== "000000") {
+      result.push({ path, theirs, ours });
+    }
   }
   return result;
 }
@@ -328,16 +333,22 @@ export function check({ cwd = process.cwd(), templateUrl } = {}) {
   }
 
   // A blocks file may differ inside its blocks, but not in its mode, as for a hook that must stay executable.
-  // The index holds the mode git commits, so it is compared there, on Windows as on any other platform. A file
-  // not yet in the index has no mode to compare.
+  // The working tree is compared, as for canonical files: git reads its mode where `core.fileMode` is set, and
+  // the index's elsewhere, as on Windows.
   if (blocks.length > 0) {
-    const theirs = modes(git(cwd, ["ls-tree", "-z", synced, "--", ...blocks]).stdout);
-    const ours = modes(git(cwd, ["ls-files", "-s", "-z", "--", ...blocks]).stdout);
-    for (const [path, mode] of ours) {
-      const expected = theirs.get(path);
-      if (expected !== undefined && expected !== mode) {
-        report(path, `${path}: mode ${mode}, but the template at ${synced.slice(0, 7)} has ${expected}`);
-      }
+    const changed = git(cwd, [
+      "-c",
+      "core.quotePath=false",
+      "diff",
+      "--no-ext-diff",
+      "--raw",
+      "-z",
+      synced,
+      "--",
+      ...blocks,
+    ]);
+    for (const { path, theirs, ours } of modeChanges(changed.stdout)) {
+      report(path, `${path}: mode ${ours}, but the template at ${synced.slice(0, 7)} has ${theirs}`);
     }
   }
 
