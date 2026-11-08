@@ -88,7 +88,8 @@ afterEach(() => {
   rmSync(root, { recursive: true, force: true });
 });
 
-describe("check", () => {
+// Each test runs git a dozen times or more, which takes seconds on Windows under load.
+describe("check", { timeout: 60_000 }, () => {
   it("passes a project that matches the template and reports it up to date", () => {
     const { run } = setUp();
 
@@ -124,7 +125,7 @@ describe("check", () => {
   it("accepts a frontmatter value the project writes over several lines", () => {
     const { project, run } = setUp();
     write(project, {
-      "AGENTS.md": TEMPLATE_FILES["AGENTS.md"].replace("status: DRAFT", "status: >\n  APPROVED\n  for Acme"),
+      "AGENTS.md": TEMPLATE_FILES["AGENTS.md"].replace("status: DRAFT", "status: >\n  APPROVED\n\n  for Acme"),
     });
 
     expect(run().problems).toEqual([]);
@@ -204,6 +205,14 @@ describe("check", () => {
     const { project, run } = setUp();
     git(project, "rm", "--quiet", "--cached", "README.md");
     write(project, { "README.md": `# ${placeholder("name")}\n` });
+
+    expect(run().problems).toEqual(["README.md:1: placeholder left behind"]);
+  });
+
+  it("reports a placeholder in a file git ignores", () => {
+    const { project, run } = setUp();
+    git(project, "rm", "--quiet", "--cached", "README.md");
+    write(project, { ".gitignore": "README.md\n", "README.md": `# ${placeholder("name")}\n` });
 
     expect(run().problems).toEqual(["README.md:1: placeholder left behind"]);
   });

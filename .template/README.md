@@ -79,6 +79,7 @@ An exception excuses that file's differences from the template, including its ab
 `node .template/check.mjs` compares this project with the template at `synced` and changes nothing. It fails on:
 
 - a `files` map that differs from the template's at `synced`, or a manifest of the wrong shape;
+- a `synced` commit outside the history of the template's default branch, which is where a sync takes it from; a commit that only this repository has proves nothing about the template, so `synced` is set to the template commit the project last synced with;
 - a `canonical` or `blocks` file that is missing;
 - a `canonical` file that differs from the template's, including its mode, as for a hook that lost its executable bit;
 - a `blocks` file whose text outside its project blocks differs, or whose markers are unbalanced;
@@ -107,7 +108,7 @@ Start on a branch, with a clean working tree and a passing `node .template/check
    git diff --stat <synced> FETCH_HEAD
    ```
 
-2. Keep a copy of the current `files` map, then copy the `files` map of `git show FETCH_HEAD:.template/manifest.json` into this manifest, keeping `template`, `synced`, and `exceptions`. A file whose class changed is handled under its new class. One that became `canonical` takes the template's version, `git checkout FETCH_HEAD -- <path>`, after the project's changes to it are considered for proposing upstream or recorded as an exception; one that became `blocks` takes the template's text outside its blocks, with the project's text moved into them. A file the old map lists and the new one does not was removed or renamed by the template.
+2. Keep a copy of the current `files` map, then copy the `files` map of `git show FETCH_HEAD:.template/manifest.json` into this manifest, keeping `template`, `synced`, and `exceptions`. A file whose class changed is handled under its new class. For one that became `canonical`, the project's changes to it are considered for proposing upstream, then either the file takes the template's version, `git checkout FETCH_HEAD -- <path>`, or the project keeps its version and lists the file in `exceptions` with the reason; one that became `blocks` takes the template's text outside its blocks, with the project's text moved into them. A file the old map lists and the new one does not was removed or renamed by the template.
 3. Apply the `canonical` and `blocks` changes with a three-way merge, taking the paths from the old map and the new one, so a file the template removed is deleted too:
 
    ```sh

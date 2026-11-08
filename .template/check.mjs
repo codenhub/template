@@ -99,8 +99,9 @@ export function templateLines(text, isDocument) {
     const end = all.indexOf("---", 1);
     if (end > 0) {
       for (let index = 0; index <= end; index += 1) {
-        // An indented line continues the value above it, such as a folded `>` scalar, and is the project's too.
-        if (!/^\s/.test(all[index])) {
+        // Only the delimiters and the keys are the template's. Any other line, indented or blank, continues the
+        // value above it, such as a folded `>` scalar, and is the project's too.
+        if (all[index] === "---" || /^[\w-]+:/.test(all[index])) {
           kept.push({ text: all[index].replace(/^([\w-]+):.*$/, "$1:"), line: index + 1 });
         }
       }
@@ -306,7 +307,7 @@ export function check({ cwd = process.cwd(), templateUrl } = {}) {
     (path) => files[path] !== "canonical" && existsSync(join(cwd, path)),
   );
   if (placeholderFiles.length > 0) {
-    const found = git(cwd, ["grep", "--untracked", "-nIE", PLACEHOLDER, "--", ...placeholderFiles]);
+    const found = git(cwd, ["grep", "--no-index", "-nIE", PLACEHOLDER, "--", ...placeholderFiles]);
     for (const match of found.stdout.split("\n").filter(Boolean)) {
       const [path, line] = match.split(":");
       problems.push(`${path}:${line}: placeholder left behind`);
