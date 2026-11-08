@@ -40,13 +40,20 @@ Defects and requests are tracked as GitHub issues, opened through the bug and fe
 
 Each issue carries one label from each group that applies:
 
-| Group      | Labels                                        | Says                                                 |
-| ---------- | --------------------------------------------- | ---------------------------------------------------- |
-| `type:`    | `bug`, `feature`, `security`, `docs`, `chore` | What kind of work it is                              |
-| `pkg:`     | one per workspace package, by unscoped name   | Which package it is in                               |
-| `app:`     | one per app, by directory name                | Which app it is in                                   |
-| `status:`  | `needs-triage`, `blocked`                     | Why it is not moving, when it is not                 |
-| `upstream` | itself                                        | It needs a change in a dependency you maintain first |
+| Group     | Labels                                        | Says                                 |
+| --------- | --------------------------------------------- | ------------------------------------ |
+| `type:`   | `bug`, `feature`, `security`, `docs`, `chore` | What kind of work it is              |
+| `pkg:`    | one per workspace package, by unscoped name   | Which package it is in               |
+| `app:`    | one per app, by directory name                | Which app it is in                   |
+| `status:` | `needs-triage`, `blocked`, `upstream`         | Why it is not moving, when it is not |
+
+`status:upstream` means the issue waits on a change in a dependency you maintain, as [below](#a-defect-found-mid-task) describes.
+
+<!-- project:start -->
+
+<!-- Label groups only this project uses, as a table like the one above, such as where a defect surfaced for a project whose packages are used elsewhere. Leave the block empty when there are none. -->
+
+<!-- project:end -->
 
 `.github/labels.json` holds the list. Add a `pkg:` or `app:` entry in the change that adds the package or app. After editing the list, create or update the labels on GitHub through `gh`:
 
@@ -55,6 +62,14 @@ node -e 'for (const l of require("./.github/labels.json")) require("node:child_p
 ```
 
 It never deletes a label: deleting one strips it from every issue that carries it, so a label that is no longer listed is removed by hand.
+
+The `type:` and `status:` labels are the same in every project started from this template, so a GitHub organization can set them as its default labels, and a new repository then starts with the labels the issue forms and Dependabot apply. Renaming a label on GitHub, rather than creating it again, keeps it on the issues that carry it.
+
+<!-- project:start -->
+
+<!-- The project's own command for syncing the labels, when it derives `pkg:` and `app:` entries instead of listing them by hand. Leave the block empty when there is none. -->
+
+<!-- project:end -->
 
 ### A defect found mid-task
 
@@ -74,7 +89,7 @@ Then mark the workaround where it lives, naming the issue in full as `<owner>/<r
 
 Once the fix lands, searching for `<owner>/<repo>#123` finds every workaround to remove. A defect with no workaround blocks the task; say so, and the fix goes first, in its own pull request.
 
-A defect or gap in a dependency you also maintain is fixed upstream, not around. File it in that dependency's repository, label the local issue that waits on it `upstream`, and mark the workaround with the upstream issue. Once the fix is released, raise the dependency to that version and remove every workaround that names the issue.
+A defect or gap in a dependency you also maintain is fixed upstream, not around. File it in that dependency's repository, label the local issue that waits on it `status:upstream`, and mark the workaround with the upstream issue. Once the fix is released, raise the dependency to that version and remove every workaround that names the issue.
 
 Opening an issue is outward-facing. An agent drafts it and asks before filing, as it does before pushing.
 
