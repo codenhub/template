@@ -2,11 +2,17 @@ name: CI
 
 on:
   pull_request:
+  # A merge queue's check of the merge result before it lands. It never fires in a repository without a queue.
+  merge_group:
+  # project:start
+  # The full check after a merge. A project that requires a merge queue removes this trigger: the queue lands the
+  # exact commit it checked, so a push run would only repeat a passed check.
   push:
     branches: [main]
+  # project:end
 
-# A pull request pushed to again abandons the run it superseded; `main` keeps every run, because each merge
-# is the authoritative check of a commit.
+# A pull request pushed to again abandons the run it superseded; a merge-queue run or a push to `main` keeps every
+# run, because each is the authoritative check of a commit.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -14,22 +20,37 @@ concurrency:
 permissions:
   contents: read
 
+# project:start
+# Workflow-level settings the project's jobs share, such as an `env:` map.
+# project:end
+
 jobs:
   verify:
     name: Verify
     runs-on: ubuntu-latest
+    # project:start
     timeout-minutes: 20
+    # project:end
     steps:
       - name: Check out the repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        # project:start
+        # Checkout options, such as `with: fetch-depth: 0` for a check that compares against a base branch.
+        # project:end
 
       - name: Set up the workspace
         uses: ./.github/actions/setup
 
-      # The same command a contributor runs: format, lint, typecheck, test and build, stopping at the first
+      # project:start
+      # Steps between setup and the check, such as asserting a base ref that a change-based selection reads.
+      # project:end
+
+      # The same command a contributor runs: format, lint, build, typecheck and test, stopping at the first
       # failure. A step only CI can run is a step nobody can reproduce before pushing.
       - name: Verify
+        # project:start
         run: pnpm verify
+        # project:end
 
       # A check that writes a file has changed what it was checking, so the run fails. `--untracked-files=all`
       # lists a new file, not only the directory that holds it.
@@ -42,3 +63,7 @@ jobs:
             exit 1
           fi
         shell: bash
+
+  # project:start
+  # The project's own jobs, such as browser suites or a generated-files check, each documented in docs/ci.md.
+  # project:end

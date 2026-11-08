@@ -127,7 +127,7 @@ When a change touches a package's `exports`, its exported symbols, or its observ
 
 ## Formatting, linting, and type checking
 
-- Code MUST pass `pnpm verify`. [Tooling](../tooling.md) lists what it runs; while working, `pnpm format:check`, `pnpm lint:check`, and `pnpm typecheck` run its parts on their own.
+- Code MUST pass `pnpm verify`. [Workspace](../workspace.md#root-scripts) lists what it runs; while working, `pnpm format:check`, `pnpm lint:check`, and `pnpm typecheck` run its parts on their own.
 - oxfmt formats code and JSON, and Prettier formats Markdown. Do not fight the formatter's output.
 - Lint rules are enforceable project policy. Change the rule, or add a scoped override with its reason recorded, rather than ignoring it broadly. A local suppression comment says why it is there.
 

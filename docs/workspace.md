@@ -1,0 +1,66 @@
+---
+status: IMPLEMENTED
+last_updated: 2026-11-08
+scope: The root script names and what each guarantees, the shared tool configurations, and how dependency versions are declared.
+---
+
+# Workspace
+
+This document is the workspace's contract: the names of the root scripts and what each one guarantees, the configuration files every project shares, and how versions are declared. CI, the git hooks, and the agent instructions rely on it. How this project implements the scripts, narrows a run, and adds a package is in [Tooling](tooling.md).
+
+## Root scripts
+
+| Script               | Guarantees                                                                                                                                    |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm format:check`  | Every file is formatted: code, JSON and YAML by oxfmt, Markdown by Prettier. Reports, writes nothing.                                         |
+| `pnpm format:fix`    | The same two formatters, rewriting files.                                                                                                     |
+| `pnpm lint:check`    | oxlint passes over the repository, with warnings treated as errors.                                                                           |
+| `pnpm lint:fix`      | oxlint, applying its safe fixes.                                                                                                              |
+| `pnpm typecheck`     | Every package and the repository's own TypeScript type-check.                                                                                 |
+| `pnpm test`          | Every package's and app's unit and integration suites pass.                                                                                   |
+| `pnpm test:watch`    | The same, in watch mode.                                                                                                                      |
+| `pnpm test:coverage` | The same, with a coverage report in `coverage/`.                                                                                              |
+| `pnpm build`         | Every package that produces output builds, in dependency order.                                                                               |
+| `pnpm verify`        | `format:check`, `lint:check`, `build`, `typecheck` and `test`, in that order, then any check the project adds, stopping at the first failure. |
+| `pnpm prepare`       | Runs on install: points git at the committed hooks in `.githooks/`.                                                                           |
+
+`pnpm verify` is what CI runs ([CI](ci.md)), so a green local `verify` predicts a green run. The order puts the cheapest checks first, so a formatting slip is reported in a second instead of after the tests. The build comes before type checking and tests because a package that imports another workspace package resolves it through that package's `exports`, which for a built package point at `dist/`: on a fresh clone, as in CI, a type check or a test run before the build cannot resolve the import and fails.
+
+Keep these names as they are: CI, the git hooks and the agent instructions call them by name. A script that only some projects need, such as `dev` or an end-to-end suite, is the project's to add.
+
+<!-- project:start -->
+
+<!-- The project's own root scripts, as a table with the same columns, such as `dev`, `test:browser`, or a generator, and the checks `pnpm verify` runs after `test`. Leave empty when there are none. -->
+
+<!-- project:end -->
+
+## Configuration
+
+| File                  | Configures                                                                                                                                                                                                                                                                |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `package.json`        | The root scripts, the tooling as `devDependencies`, and the pinned Node.js and pnpm (`engines`, `packageManager`).                                                                                                                                                        |
+| `pnpm-workspace.yaml` | The workspace globs, the catalog of every dependency version, and the supply-chain rules for installs ([CI](ci.md#dependency-installs)).                                                                                                                                  |
+| `.npmrc`              | `engine-strict`, so an install outside `engines` fails.                                                                                                                                                                                                                   |
+| `.nvmrc`              | The exact Node.js version, read by `nvm` and by CI.                                                                                                                                                                                                                       |
+| `.editorconfig`       | Indentation, final newline, LF line endings, and no hard wrap in Markdown.                                                                                                                                                                                                |
+| `.gitattributes`      | LF line endings in the repository and the working tree on every platform, and the binary file types.                                                                                                                                                                      |
+| `.oxfmtrc.json`       | oxfmt: 120 columns, double quotes, semicolons, trailing commas, sorted imports and `package.json` keys. Markdown is excluded; Prettier owns it. Nothing else is listed: oxfmt already skips what `.gitignore` and `.prettierignore` list, and the lockfile.               |
+| `.prettierrc.json5`   | Prettier, for Markdown only: `proseWrap: "never"`, so a paragraph is one line and a diff shows the sentence that changed.                                                                                                                                                 |
+| `.prettierignore`     | Paths inside the Markdown set Prettier leaves alone: build output and caches.                                                                                                                                                                                             |
+| `.oxlintrc.json`      | oxlint's plugins and rules. `no-console` allows `console.warn` and `console.error`, a library's deliberate diagnostics, and refuses the rest, such as a forgotten `console.log`, except in `.githooks/`, any `scripts/` directory and tests, where printing is the point. |
+
+The TypeScript and Vitest configurations depend on how the project runs its checks; [Tooling](tooling.md) describes them.
+
+<!-- project:start -->
+
+<!-- The project's own configuration files, as a table with the same columns, such as an extra tsconfig for one runtime, a Rust toolchain, or a deployment config. Leave empty when there are none. -->
+
+<!-- project:end -->
+
+### Two formatters
+
+oxfmt formats everything it understands except Markdown; Prettier formats only Markdown. oxfmt is far faster and agrees with Prettier's output for code, but its Markdown support does not yet match Prettier's, and the documentation is where formatting churn costs the most review time. `.oxfmtrc.json` ignores `**/*.md`, and the scripts hand Prettier `**/*.md` explicitly, so neither formatter touches the other's files.
+
+### Versions
+
+Every dependency version is declared once, in the catalog in `pnpm-workspace.yaml`, and referred to as `catalog:` in each `package.json`. The workspace therefore cannot hold two versions of one dependency by accident, and an upgrade is a one-line change that Dependabot can propose ([CI](ci.md#dependency-updates)).

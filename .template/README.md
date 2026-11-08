@@ -16,6 +16,10 @@ The template is brand-agnostic. It carries structure, tooling, and the general g
 
 A file the manifest does not list belongs to the project.
 
+`manifest.json#template` names the template repository as `owner/repo`, the one a sync fetches from.
+
+The frontmatter values of a `blocks` document belong to the project, as if the frontmatter were a block: `status`, `last_updated`, and `scope` describe this project's copy, such as whether its code complies and when it last changed, so a sync keeps the project's values. The fields themselves are set by the [documentation guidelines](../docs/guidelines/documentation.md).
+
 ## Project blocks
 
 A project block opens and closes with a marker in the file's own comment syntax:
@@ -33,7 +37,14 @@ Project-specific text.
 # project:end
 ```
 
-A block in the template holds placeholder guidance for what the project puts there. A file may have several blocks; they do not nest. A block the project leaves empty stays in the file, so a later sync knows where project text goes.
+```jsonc
+// project:start
+// project:end
+```
+
+Plain JSON has no comments and cannot hold a block, so a JSON file that needs one is either read as JSONC by its tool, as `.oxlintrc.json` and `.oxfmtrc.json` are, or written in a format with comments, as `.prettierrc.json5` is. In a list or an object, the block opens it, before the template's entries: oxfmt removes the trailing comma after the last entry, so a block after it would need an edit outside the block to add the first project entry. A later duplicate key wins, so a block that opens an object adds keys and does not change the template's.
+
+A block in the template holds placeholder guidance for what the project puts there, or default content the project keeps or replaces, such as the `push` trigger in `ci.yml`. A sync keeps the project's text in every block, so a later change to a block's default does not reach a project on its own. A file may have several blocks; they do not nest. A block the project leaves empty stays in the file, so a later sync knows where project text goes.
 
 ## Placeholders
 
