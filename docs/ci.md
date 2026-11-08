@@ -6,7 +6,7 @@ scope: The pinned toolchain, dependency installs, the CI workflow, action pinnin
 
 # Continuous integration
 
-`.github/workflows/ci.yml` verifies every pull request, every merge-queue check, and every push to `main`. It runs the same script a contributor runs locally, `pnpm verify`, so a green run means `verify` passed rather than that some CI-only approximation of it did. [Tooling](tooling.md) describes the scripts.
+`.github/workflows/ci.yml` verifies every pull request, every merge-queue check, and every push to `main`. It runs the same script a contributor runs locally, `pnpm verify`, so a green run means `verify` passed rather than that some CI-only approximation of it did. [Workspace](workspace.md) says what each script guarantees.
 
 ## Toolchain
 

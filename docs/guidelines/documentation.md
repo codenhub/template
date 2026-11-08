@@ -1,6 +1,6 @@
 ---
 status: IMPLEMENTED
-last_updated: 2026-11-02
+last_updated: 2026-11-08
 scope: How documentation under `docs/` is structured, maintained, interpreted, and written, including this document.
 ---
 
@@ -112,7 +112,7 @@ Plans and similar temporary documents MAY live in `docs/plans/`. This directory 
 - `docs/specs/`: contracts for a deliverable, such as what tests must look like or how a feature behaves. A spec is written so compliance can be checked.
 - `docs/guidelines/`: conventions contributors apply by judgment while working, such as how to write code or documentation. A guideline MAY contain enforced rules, but its main job is to shape decisions no checklist fully captures.
 - `docs/guides/`: documentation for the people who use, run, or integrate with what the project ships, read outside the repository. Add it when the project has such readers.
-- Root `docs/`: the documentation index and references for one repository area or process, such as `tooling.md`, `ci.md`, an architecture overview, and an optional `roadmap.md`.
+- Root `docs/`: the documentation index and references for one repository area or process, such as `workspace.md`, `tooling.md`, `ci.md`, an architecture overview, and an optional `roadmap.md`.
 
 When a new document could fit more than one place, file it by its main job: rules a deliverable must satisfy go in `specs/`, how to work goes in `guidelines/`, what a user of the product needs goes in `guides/`, and what exists and how to use it stays at the root. Do not add another folder until a group of documents fits none of these.
 

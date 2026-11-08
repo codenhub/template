@@ -1,6 +1,6 @@
 ---
 status: IMPLEMENTED
-last_updated: 2026-11-02
+last_updated: 2026-11-08
 scope: Index of the project documentation.
 ---
 
@@ -42,10 +42,11 @@ Where a newcomer should start, and the project's overview documents, for example
 
 ## Repository references
 
-| Document              | Contains                                                               |
-| --------------------- | ---------------------------------------------------------------------- |
-| [Tooling](tooling.md) | Root scripts, what `pnpm verify` runs, git hooks, and narrowing a run. |
-| [CI](ci.md)           | The pinned toolchain, the verification jobs, and dependency updates.   |
+| Document                  | Contains                                                                                                         |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| [Workspace](workspace.md) | The root scripts and what each guarantees, the shared tool configurations, and dependency versions.              |
+| [Tooling](tooling.md)     | How the scripts are implemented, the TypeScript and Vitest configuration, narrowing a run, and adding a package. |
+| [CI](ci.md)               | The pinned toolchain, the verification jobs, and dependency updates.                                             |
 
 <!-- project:start -->
 
