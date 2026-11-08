@@ -18,9 +18,13 @@ The template repository holds a stack-neutral core at its root and one directory
 
 Rejected: **one template repository per stack.** Each would be simpler alone, but every change to the process, the agent instructions, or the documentation guidelines would be repeated in each repository, and they would drift apart. Keeping the core in one place is the reason to split at all.
 
-### The core names the gate through `CONTRIBUTING.md`
+### Profile values fill the core
 
-The core never names a stack's command. It says "the gate [`CONTRIBUTING.md`](../CONTRIBUTING.md#validation) names", and the profile's text in that section supplies the command: `pnpm verify` for `node-pnpm`. `AGENTS.md`, the pull request template, and the guidelines refer to the gate the same way.
+The core never names a stack's command; it holds a placeholder that creation fills, as it fills `{{name}}`. A profile declares a value for each: `{{setup}}`, the setup commands, and `{{verify}}`, the delivery gate. `AGENTS.md`, `CONTRIBUTING.md`, the pull request template, and the README then show the real command in a created project. Anything about the stack beyond those values, such as where versions are pinned or how the hooks are set up by hand, is in the profile's `docs/tooling.md`, a document every profile provides and the core links to.
+
+Until the profiles exist, the values are listed with the other placeholders in [the README](README.md#creating-a-project), and this repository is filled with `node-pnpm`'s wherever it is not a placeholder.
+
+Rejected: **pointers only,** where the core says "the gate [`CONTRIBUTING.md`](../CONTRIBUTING.md#validation) names" and never the command. Nothing is filled in, but every reader takes an extra hop to reach the command, and an agent reads a reference where it needs a command to run. The cost of the values is two more placeholders, which a comparison shows as differences on the lines that hold them, as it already shows `{{name}}`.
 
 Rejected: **one runner command in every project,** such as `just verify` or `make verify`. Agents would get one command to call everywhere, but every project would need that runner installed, `make` is poor on Windows, and the command it ran would still differ per stack, so documents would still have to say what it does.
 
@@ -42,39 +46,45 @@ Rejected: **a second profile now,** to prove the core is neutral. A profile nobo
 
 The core does not fix `apps/` + `packages/`. A project is a single package or a workspace whose members it declares, and the core defines commit scopes and the `pkg:` and `app:` labels in terms of those declared members. `node-pnpm` keeps `apps/*` and `packages/*` as its default member globs.
 
+### A file lives in one place
+
+A file that holds both core content and stack content, such as `.gitignore`, `.editorconfig`, `.github/dependabot.yml`, and `.github/workflows/ci.yml`, belongs whole to the profile. Nothing merges two files, so what a project gets is a copy of a file, and what it compares with is that file.
+
+Rejected: **merging a core part and a profile part,** such as a core `.gitignore` with the profile's lines appended. It saves repeating a core improvement in each profile, but it needs a merge rule per format, YAML for `ci.yml` and lines for `.gitignore`, and a comparison would have to repeat the merge to show what the project started from. With one profile, there is nothing to repeat yet.
+
 ## Open questions
 
 These are answered while implementing, each recorded here before the change that depends on it:
 
-- **A file both sides need.** Some files hold core content and stack content, such as `.gitignore`, `.editorconfig`, `.github/dependabot.yml`, and `.github/workflows/ci.yml`. The candidate rule is that a file lives in exactly one place, so the profile owns the whole file, and nothing ever merges two files. The cost is that a core improvement to such a file is repeated in each profile.
 - **Where `pre-commit` reads a profile's commands.** Candidates: a sourced `sh` file such as `.githooks/profile.sh` that the profile owns, or a plain data file listing extension, fix command, and check command.
 - **How a comparison sees the overlay.** A project compares with the core plus one profile, not with the repository as it is. Candidates: a script in `.template/` that assembles core and profile into a temporary directory, compared with `git diff --no-index`; or an assembled branch per profile, published by the template's CI, which keeps the comparison a plain `git diff FETCH_HEAD`.
+- **The label sync command.** `CONTRIBUTING.md` creates the labels with `node -e`, which a project without Node.js cannot run. Candidates: a `sh` loop over `gh label create` that needs `jq`, or the command as a profile value.
 - **How the template verifies itself.** Once the Node files move into `profiles/node-pnpm/`, the repository root is no longer a pnpm workspace, and `pnpm verify` cannot run there. The template's CI assembles each profile into a project and runs that project's gate, and the same assembly creates a project.
 
 ## Inventory
 
 Where each file goes. "Split" means the file's general part stays in the core and its stack part moves to a profile document.
 
-| File                                                                                                                                         | Goes to            |
-| -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
-| `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `SECURITY.md`, `LICENSE`, `README.md`                                                           | Core, gate wording |
-| `.gitattributes`, `.github/ISSUE_TEMPLATE/`, `.github/labels.json`, `.github/pull_request_template.md`                                       | Core               |
-| `.githooks/commit-msg`, `.githooks/pre-push`, `.githooks/AGENTS.md`                                                                          | Core               |
-| `.githooks/pre-commit`                                                                                                                       | Core, dispatcher   |
-| `.githooks/install.mjs`                                                                                                                      | Removed            |
-| `docs/README.md`, `docs/guidelines/documentation.md`, `docs/guidelines/security.md`, `docs/guidelines/brand.md`                              | Core               |
-| `docs/guidelines/code.md`                                                                                                                    | Split              |
-| `docs/specs/tests.md`, `docs/ci.md`                                                                                                          | Split              |
-| `docs/workspace.md`, `docs/tooling.md`                                                                                                       | `node-pnpm`        |
-| `.gitignore`, `.editorconfig`, `.github/dependabot.yml`, `.github/workflows/ci.yml`, `.github/actions/setup/`                                | Open question      |
-| `package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`, `.nvmrc`, `.oxfmtrc.json`, `.oxlintrc.json`, `.prettierrc.json5`, `.prettierignore` | `node-pnpm`        |
-| `tsconfig.base.json`, `tsconfig.json`, `tsconfig.root.json`, `vitest.config.ts`, `apps/`, `packages/`                                        | `node-pnpm`        |
+| File                                                                                                                                         | Goes to          |
+| -------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
+| `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `SECURITY.md`, `LICENSE`, `README.md`                                                           | Core, values     |
+| `.gitattributes`, `.github/ISSUE_TEMPLATE/`, `.github/labels.json`, `.github/pull_request_template.md`                                       | Core             |
+| `.githooks/commit-msg`, `.githooks/pre-push`, `.githooks/AGENTS.md`                                                                          | Core             |
+| `.githooks/pre-commit`                                                                                                                       | Core, dispatcher |
+| `.githooks/install.mjs`                                                                                                                      | Removed          |
+| `docs/README.md`, `docs/guidelines/documentation.md`, `docs/guidelines/security.md`, `docs/guidelines/brand.md`                              | Core             |
+| `docs/guidelines/code.md`                                                                                                                    | Split            |
+| `docs/specs/tests.md`, `docs/ci.md`                                                                                                          | Split            |
+| `docs/workspace.md`, `docs/tooling.md`                                                                                                       | `node-pnpm`      |
+| `.gitignore`, `.editorconfig`, `.github/dependabot.yml`, `.github/workflows/ci.yml`, `.github/actions/setup/`                                | `node-pnpm`      |
+| `package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`, `.nvmrc`, `.oxfmtrc.json`, `.oxlintrc.json`, `.prettierrc.json5`, `.prettierignore` | `node-pnpm`      |
+| `tsconfig.base.json`, `tsconfig.json`, `tsconfig.root.json`, `vitest.config.ts`, `apps/`, `packages/`                                        | `node-pnpm`      |
 
 ## Plan
 
 Each step is its own pull request, and each leaves the template working:
 
-1. **Neutral wording in place.** The core's documents name the gate through `CONTRIBUTING.md` and the layout through declared members, with no file moved yet. `pnpm verify` still runs at the root.
+1. **Neutral wording in place.** The core's documents hold `{{setup}}` and `{{verify}}` where they named pnpm commands, and describe the layout through declared members, with no file moved yet. `pnpm verify` still runs at the root.
 2. **Hooks.** `pre-commit` becomes the dispatcher, reading the Node commands from wherever the open question settles; `install.mjs` is replaced by `git config core.hooksPath .githooks`, run from `pnpm prepare`.
 3. **Split the documents.** The general parts of `code.md`, `tests.md`, and `ci.md` stay; their TypeScript, Vitest, and pnpm parts move to profile documents, still at the root.
 4. **Assembly and self-verification.** The script that assembles core and profile, used by the template's CI, by creation, and by comparison.
