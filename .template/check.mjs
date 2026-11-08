@@ -85,6 +85,21 @@ export function markerProblems(text) {
 }
 
 /**
+ * Reads each path's mode from the NUL-separated output of `git ls-tree -z` or `git ls-files -s -z`, both of
+ * which start an entry with the mode and end it with a tab and the path.
+ * @param {string} output The git output.
+ * @returns {Map<string, string>} Each path's mode, such as `100755`.
+ */
+function modes(output) {
+  const result = new Map();
+  for (const entry of output.split("\0").filter(Boolean)) {
+    const tab = entry.indexOf("\t");
+    result.set(entry.slice(tab + 1), entry.slice(0, entry.indexOf(" ")));
+  }
+  return result;
+}
+
+/**
  * Keeps the template-owned lines of a `blocks` file: everything outside its project blocks, with the
  * markers themselves, and for a Markdown document its frontmatter keys without their values.
  * @param {string} text The file's text.
@@ -309,6 +324,20 @@ export function check({ cwd = process.cwd(), templateUrl } = {}) {
     if (index !== -1 || ours.length !== expected.length) {
       const line = (ours[index] ?? ours.at(-1))?.line ?? 1;
       report(path, `${path}:${line}: differs from the template's text outside the project blocks`);
+    }
+  }
+
+  // A blocks file may differ inside its blocks, but not in its mode, as for a hook that must stay executable.
+  // The index holds the mode git commits, so it is compared there, on Windows as on any other platform. A file
+  // not yet in the index has no mode to compare.
+  if (blocks.length > 0) {
+    const theirs = modes(git(cwd, ["ls-tree", "-z", synced, "--", ...blocks]).stdout);
+    const ours = modes(git(cwd, ["ls-files", "-s", "-z", "--", ...blocks]).stdout);
+    for (const [path, mode] of ours) {
+      const expected = theirs.get(path);
+      if (expected !== undefined && expected !== mode) {
+        report(path, `${path}: mode ${mode}, but the template at ${synced.slice(0, 7)} has ${expected}`);
+      }
     }
   }
 

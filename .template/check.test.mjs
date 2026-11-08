@@ -185,6 +185,13 @@ describe("check", { timeout: 60_000 }, () => {
     expect(run().problems).toEqual(["AGENTS.md:11: differs from the template's text outside the project blocks"]);
   });
 
+  it("reports a blocks file whose mode differs from the template's, as for a hook that lost its executable bit", () => {
+    const { project, synced, run } = setUp();
+    git(project, "update-index", "--chmod=+x", "AGENTS.md");
+
+    expect(run().problems).toEqual([`AGENTS.md: mode 100755, but the template at ${synced.slice(0, 7)} has 100644`]);
+  });
+
   it("reports a removed block", () => {
     const { project, run } = setUp();
     write(project, {
