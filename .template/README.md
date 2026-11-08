@@ -2,6 +2,8 @@
 
 This directory belongs to the template repository only. A project created from the template deletes it, and keeps nothing else that ties it to the template: no manifest, no recorded sync, no markers. Every other file is the project's from the first commit.
 
+The split into a stack-neutral core and stack profiles is planned in [Core and profiles](profiles.md).
+
 ## What the template is
 
 The template is a starting point and a reference, not a model a project has to follow. A new project copies it. From then on, the project and the template evolve apart, and either can end up with the better version of a file.
