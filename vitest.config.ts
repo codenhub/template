@@ -7,7 +7,7 @@ export default defineConfig({
     projects: [
       // The repository's own scripts. It also keeps the list from being empty, which Vitest refuses, before
       // the first package exists.
-      { test: { name: "root", include: ["scripts/**/*.test.ts", ".template/*.test.mjs"] } },
+      { test: { name: "root", include: ["scripts/**/*.test.ts"] } },
       "packages/*/vitest.config.ts",
       "apps/*/vitest.config.ts",
     ],
@@ -15,7 +15,7 @@ export default defineConfig({
     passWithNoTests: true,
     coverage: {
       provider: "v8",
-      include: ["packages/*/src/**", "apps/*/src/**", "scripts/**", ".template/*.mjs"],
+      include: ["packages/*/src/**", "apps/*/src/**", "scripts/**"],
       exclude: ["**/*.test.ts", "**/*.test.tsx", "**/*.test.mjs"],
     },
   },

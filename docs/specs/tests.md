@@ -67,11 +67,7 @@ Manual usage scenarios, such as a playground used during development, are outsid
 
 Behavior that no automated test reaches is listed here with how it is verified instead, usually by hand, and why a suite was not added. A gap that is written down can be judged; a gap nobody recorded is found by a user.
 
-<!-- project:start -->
-
-<!-- Project-specific categories and suites (for example conformance suites, a security suite, a second language's test runner), where they live, the gaps listed under "Not covered by automated tests", and per-area coverage targets. Leave empty when there are none. -->
-
-<!-- project:end -->
+<!-- Project-specific categories and suites (for example conformance suites, a security suite, a second language's test runner), where they live, the gaps listed under "Not covered by automated tests", and per-area coverage targets. -->
 
 ## Commands
 
@@ -85,14 +81,10 @@ pnpm test:coverage
 
 Narrow a run while working on one area. A path after the script is forwarded to Vitest, so a single directory or file runs on its own:
 
-<!-- project:start -->
-
 ```sh
 pnpm test packages/<name>
 pnpm test packages/<name>/src/<file>.test.ts
 pnpm test:watch packages/<name>
 ```
-
-<!-- project:end -->
 
 [Tooling](../tooling.md) describes the other ways to narrow a run.

@@ -32,8 +32,3 @@ playwright-report
 
 # Short-lived plans (docs/guidelines/documentation.md, "What belongs here").
 docs/plans
-
-# project:start
-# Project-specific ignores: framework caches (`.astro`, `.wrangler`), native build
-# output (`target`), local data (`*.db`), generated copies of shared assets.
-# project:end

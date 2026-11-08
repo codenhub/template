@@ -31,11 +31,7 @@ Name by domain intent. Avoid names that say only the type or the mechanism, such
 - Do not add compatibility layers unless there is a real consumer, persisted data, shipped behavior, or explicit requirement that needs one.
 - Do not add a dependency unless simple in-house code is clearly worse.
 
-<!-- project:start -->
-
 <!-- Where the project's architecture is recorded (for example `docs/architecture.md`), its layout and dependency direction, runtime boundaries, and what code must do to cross them. -->
-
-<!-- project:end -->
 
 ### Fix it upstream
 
@@ -134,13 +130,9 @@ Every symbol exported from a published package's entrypoint, through `package.js
 
 An export needed only to compose entrypoints SHOULD stay out of public entrypoints. When one cannot, mark it `@internal`.
 
-When a change touches a package's `exports`, its exported symbols, or its observable behavior or failures, it updates the TSDoc and every README or document describing them in the same change. oxlint checks the structure of the tags. Whether every export is documented, and how well, is a review responsibility unless the project enforces it, as the block below records.
+When a change touches a package's `exports`, its exported symbols, or its observable behavior or failures, it updates the TSDoc and every README or document describing them in the same change. oxlint checks the structure of the tags. Whether every export is documented, and how well, is a review responsibility unless the project enforces it, as this section then records.
 
-<!-- project:start -->
-
-<!-- How the project enforces or extends these TSDoc rules, such as a check that fails on an undocumented export, or the document that defines its package documentation. Leave empty when there is none. -->
-
-<!-- project:end -->
+<!-- How the project enforces or extends these TSDoc rules, such as a check that fails on an undocumented export, or the document that defines its package documentation. -->
 
 ## Formatting, linting, and type checking
 
@@ -148,8 +140,4 @@ When a change touches a package's `exports`, its exported symbols, or its observ
 - oxfmt formats code and JSON, and Prettier formats Markdown. Do not fight the formatter's output.
 - Lint rules are enforceable project policy. Change the rule, or add a scoped override with its reason recorded, rather than ignoring it broadly. A local suppression comment says why it is there.
 
-<!-- project:start -->
-
-<!-- Conventions for the project's own languages, frameworks, and styling, for example a section per framework or a second language with its own naming, formatter, and linter. Leave empty when there are none. -->
-
-<!-- project:end -->
+<!-- Conventions for the project's own languages, frameworks, and styling, for example a section per framework or a second language with its own naming, formatter, and linter. -->

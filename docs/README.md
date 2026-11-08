@@ -10,8 +10,6 @@ scope: Index of the project documentation.
 
 Every document in `docs/` is listed here. Adding, moving, or deleting one updates this index in the same change.
 
-<!-- project:start -->
-
 <!--
 Where a newcomer should start, and the project's overview documents, for example:
 
@@ -23,25 +21,16 @@ Where a newcomer should start, and the project's overview documents, for example
 | [Roadmap](roadmap.md)           | Current focus, what is planned, what is not. |
 -->
 
-<!-- project:end -->
-
 ## Guidelines
 
-| Document                                     | Contains                                                                                        |
-| -------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| [Code](guidelines/code.md)                   | Naming, design, TypeScript, async and errors, testing practices, and documentation in code.     |
-| [Documentation](guidelines/documentation.md) | Metadata, status and authority, recording decisions, exceptions, layout, and the writing voice. |
-| [Security](guidelines/security.md)           | Secrets, untrusted input, what stays out of logs, and reviewing a change.                       |
+| Document                                     | Contains                                                                                         |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| [Brand](guidelines/brand.md)                 | The name, the voice, and the visual identity, and why each was chosen.                           |
+| [Code](guidelines/code.md)                   | Naming, design, TypeScript, async and errors, testing practices, and documentation in code.      |
+| [Documentation](guidelines/documentation.md) | Metadata, prompts, status and authority, recording decisions, exceptions, layout, and the voice. |
+| [Security](guidelines/security.md)           | Secrets, untrusted input, what stays out of logs, and reviewing a change.                        |
 
-<!-- project:start -->
-
-| Document                     | Contains                                                               |
-| ---------------------------- | ---------------------------------------------------------------------- |
-| [Brand](guidelines/brand.md) | The name, the voice, and the visual identity, and why each was chosen. |
-
-<!-- The project's own guidelines, as a table with the same columns, including the brand guidelines when the project keeps them in `guidelines/brand.md`. Leave empty when there are none. -->
-
-<!-- project:end -->
+<!-- The project's own guidelines, as rows of the table above. Delete the Brand row when the project has no brand guidelines or keeps them elsewhere. -->
 
 ## Repository references
 
@@ -51,11 +40,7 @@ Where a newcomer should start, and the project's overview documents, for example
 | [Tooling](tooling.md)     | How the scripts are implemented, the TypeScript and Vitest configuration, narrowing a run, and adding a package. |
 | [CI](ci.md)               | The pinned toolchain, the verification jobs, and dependency updates.                                             |
 
-<!-- project:start -->
-
-<!-- The project's own references for one repository area or process (for example assets or releases), as a table with the same columns. Leave empty when there are none. -->
-
-<!-- project:end -->
+<!-- The project's own references for one repository area or process (for example assets or releases), as a table with the same columns. -->
 
 ## Specifications
 
@@ -63,8 +48,4 @@ Where a newcomer should start, and the project's overview documents, for example
 | ----------------------- | ----------------------------------------------------------------- |
 | [Tests](specs/tests.md) | Test categories, locations, configuration, scripts, and coverage. |
 
-<!-- project:start -->
-
-<!-- The project's own specifications, as a table with the same columns, and any further sections such as guides for the people who use or run what the project ships. Leave empty when there are none. -->
-
-<!-- project:end -->
+<!-- The project's own specifications, as a table with the same columns, and any further sections such as guides for the people who use or run what the project ships. -->

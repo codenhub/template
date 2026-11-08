@@ -20,9 +20,7 @@ body:
       description: The released version, or the commit from `git rev-parse --short HEAD` when running from a checkout.
     validations:
       required: true
-  # project:start
-  # Fields this project's triage needs, such as a runtime or platform dropdown. Delete this comment when adding them, or leave the block empty.
-  # project:end
+  # Fields this project's triage needs, such as a runtime or platform dropdown. Delete this comment when adding them.
   - type: textarea
     id: actual
     attributes:

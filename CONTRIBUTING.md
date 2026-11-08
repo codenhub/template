@@ -15,11 +15,7 @@ pnpm install
 
 `pnpm install` also points git at `.githooks/` through `core.hooksPath`, so the hooks described below start working after the first install and not before. If lifecycle scripts were disabled during the install, run `node .githooks/install.mjs`. [CI](docs/ci.md) covers why the versions are pinned where they are.
 
-<!-- project:start -->
-
-<!-- Prerequisites beyond Node and pnpm, such as another toolchain or platform SDK, and the command that starts the project for development. Leave the block empty when there are none. -->
-
-<!-- project:end -->
+<!-- Prerequisites beyond Node and pnpm, such as another toolchain or platform SDK, and the command that starts the project for development. -->
 
 ## Changes
 
@@ -28,11 +24,7 @@ pnpm install
 - Update affected documentation in the same change as behavior, public API, exports, conventions, or decisions. Each contract has one owning document; references point to that owner rather than repeat its requirements.
 - Do not commit secrets, `.env` files, build artifacts, or unrelated changes.
 
-<!-- project:start -->
-
-<!-- Change rules that hold only in this project, such as a generated file and the command that regenerates it, or invariants every change keeps and the test that proves each. Leave the block empty when there are none. -->
-
-<!-- project:end -->
+<!-- Change rules that hold only in this project, such as a generated file and the command that regenerates it, or invariants every change keeps and the test that proves each. -->
 
 ## Issues
 
@@ -49,13 +41,9 @@ Each issue carries one label from each group that applies:
 
 `status:upstream` means the issue waits on a change in a dependency you maintain, as [below](#a-defect-found-mid-task) describes.
 
-<!-- project:start -->
+<!-- Label groups only this project uses, as a table like the one above, such as where a defect surfaced for a project whose packages are used elsewhere. -->
 
-<!-- Label groups only this project uses, as a table like the one above, such as where a defect surfaced for a project whose packages are used elsewhere. Leave the block empty when there are none. -->
-
-<!-- project:end -->
-
-`.github/labels.json` holds the list. Unless the project derives its `pkg:` and `app:` labels, as the block below then says, add an entry in the change that adds the package or app. After editing the list, create or update the labels on GitHub through `gh`:
+`.github/labels.json` holds the list. Unless the project derives its `pkg:` and `app:` labels with a command of its own, recorded below, add an entry in the change that adds the package or app. After editing the list, create or update the labels on GitHub through `gh`:
 
 ```sh
 node -e 'for (const l of require("./.github/labels.json")) require("node:child_process").execFileSync("gh", ["label", "create", l.name, "--color", l.color, "--description", l.description, "--force"], { stdio: "inherit" })'
@@ -63,13 +51,9 @@ node -e 'for (const l of require("./.github/labels.json")) require("node:child_p
 
 It never deletes a label: deleting one strips it from every issue that carries it, so a label that is no longer listed is removed by hand.
 
-The `type:` and `status:` labels are the same in every project started from this template, so a GitHub organization can set them as its default labels, and a new repository then starts with the labels the issue forms and Dependabot apply. Renaming a label on GitHub, rather than creating it again, keeps it on the issues that carry it.
+The `type:` and `status:` labels do not depend on the project, so a GitHub organization can set them as its default labels, and a new repository then starts with the labels the issue forms and Dependabot apply. Renaming a label on GitHub, rather than creating it again, keeps it on the issues that carry it.
 
-<!-- project:start -->
-
-<!-- The project's own command for syncing the labels, when it derives `pkg:` and `app:` entries instead of listing them by hand. Leave the block empty when there is none. -->
-
-<!-- project:end -->
+<!-- The project's own command for syncing the labels, when it derives `pkg:` and `app:` entries instead of listing them by hand. -->
 
 ### A defect found mid-task
 
@@ -134,11 +118,7 @@ One of `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `rever
 
 The area the change lands in, and optional. For a workspace package it is the package name without its npm scope; for a package nested a level deeper, such as `packages/plugins/vite`, it is the path under `packages/`, as in `plugins/vite`. For an app it is the directory name under `apps/`. Repository-level areas use their own name, such as `ci`, `deps`, or `docs`. Leave it out when the change spans several.
 
-<!-- project:start -->
-
-<!-- Scopes this project uses beyond the rule above, such as the areas of a single-package project, with what each covers. Leave the block empty when there are none. -->
-
-<!-- project:end -->
+<!-- Scopes this project uses beyond the rule above, such as the areas of a single-package project, with what each covers. -->
 
 ### Subject
 
@@ -174,7 +154,7 @@ The human directing the work stays the commit author. The trailer is an addition
 
 ## Validation
 
-Run scripts from the repository root. During development, narrow checks to what changed; [tooling](docs/tooling.md) lists the commands and how to narrow them. Before delivering a change, run the gate the block below names; by default, that is the whole gate:
+Run scripts from the repository root. During development, narrow checks to what changed; [tooling](docs/tooling.md) lists the commands and how to narrow them. Before delivering a change, run the gate this section names; unless it names a narrower one, that is the whole gate:
 
 ```sh
 pnpm verify
@@ -182,11 +162,7 @@ pnpm verify
 
 It runs formatting, linting, the build, type checking, and tests, the same checks CI runs. Report any step that was skipped or failed.
 
-<!-- project:start -->
-
-<!-- The gate before delivering a change when it is not plain `pnpm verify`, such as a run narrowed to changed packages that CI completes, and checks `pnpm verify` does not run and when to run them, such as browser suites or a check for a generated file. Leave the block empty when there are none. -->
-
-<!-- project:end -->
+<!-- The gate before delivering a change when it is not plain `pnpm verify`, such as a run narrowed to changed packages that CI completes, and checks `pnpm verify` does not run and when to run them, such as browser suites or a check for a generated file. -->
 
 ## Pull requests
 
@@ -206,11 +182,7 @@ Releasing is a maintainer action, and it is separate from merging. Merging chang
 
 Bump the version and record what users need to know in an ordinary pull request first; the release itself names a commit already on `main`.
 
-<!-- project:start -->
-
 <!-- What a release is in this project, such as a version tag that publishes packages or an image, or a deployment, and the commands that make one. Write "This project has no releases yet." when it has none. -->
-
-<!-- project:end -->
 
 Pushing a release tag and deploying are outward-facing actions. An agent asks first and never does either on its own initiative.
 

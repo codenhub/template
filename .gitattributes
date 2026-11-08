@@ -18,7 +18,3 @@
 *.webp binary
 *.woff binary
 *.woff2 binary
-
-# project:start
-# Project-specific attributes, such as generated files marked `linguist-generated`.
-# project:end
