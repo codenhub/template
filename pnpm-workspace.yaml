@@ -6,12 +6,12 @@ packages:
 # hold two versions of one dependency by accident. A new third-party dependency adds its version here.
 catalog:
   "@types/node": ^24.19.2
-  "@vitest/coverage-v8": ^5.0.5
-  oxfmt: ^0.75.0
-  oxlint: ^1.89.0
+  "@vitest/coverage-v8": ^5.1.0
+  oxfmt: ^0.76.0
+  oxlint: ^1.91.0
   prettier: ^3.9.10
   typescript: ^7.0.2
-  vitest: ^5.0.5
+  vitest: ^5.1.0
 
 # Supply-chain rules, applied to every install, local and in CI alike (docs/ci.md, "Dependency installs").
 # Refuses a transitive dependency that resolves to a git repository or a tarball URL instead of the registry.
