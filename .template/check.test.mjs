@@ -209,6 +209,17 @@ describe("check", { timeout: 60_000 }, () => {
     expect(run().problems).toEqual(["README.md:1: placeholder left behind"]);
   });
 
+  it("reports a synced commit the template has only on another branch", () => {
+    const { template, project, run } = setUp();
+    git(template, "switch", "--quiet", "-c", "side");
+    const side = commit(template, { "side.txt": "1\n" });
+    git(template, "switch", "--quiet", "main");
+    git(project, "fetch", "--quiet", template, "side");
+    write(project, { ".template/manifest.json": manifest({ synced: side }) });
+
+    expect(run().problems).toEqual([expect.stringMatching(new RegExp(`synced ${side} is not in the history of`))]);
+  });
+
   it("reports a placeholder in a file git ignores", () => {
     const { project, run } = setUp();
     git(project, "rm", "--quiet", "--cached", "README.md");

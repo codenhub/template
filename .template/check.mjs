@@ -236,11 +236,22 @@ export function check({ cwd = process.cwd(), templateUrl } = {}) {
   // `synced` counts only in the history of the template's default branch, which is where a sync takes it
   // from. A commit already in this repository proves nothing about the template, and fetching it by SHA
   // cannot prove more: git skips the fetch of an object it already has.
-  if (git(cwd, ["merge-base", "--is-ancestor", synced, headSha]).status !== 0) {
-    problems.push(`${MANIFEST}: synced ${synced} is not in the history of ${url}'s default branch`);
+  const hasSynced = git(cwd, ["cat-file", "-e", `${synced}^{commit}`]).status === 0;
+  const ancestry = hasSynced ? git(cwd, ["merge-base", "--is-ancestor", synced, headSha]) : { status: 1, stderr: "" };
+  if (ancestry.status !== 0) {
+    problems.push(
+      ancestry.status === 1
+        ? `${MANIFEST}: synced ${synced} is not in the history of ${url}'s default branch`
+        : `could not compare synced ${synced} with ${url}: ${ancestry.stderr}`,
+    );
     return { problems, notes };
   }
-  const behind = Number(git(cwd, ["rev-list", "--count", `${synced}..${headSha}`]).stdout.trim());
+  const count = git(cwd, ["rev-list", "--count", `${synced}..${headSha}`]);
+  if (count.status !== 0) {
+    problems.push(`could not count the commits since synced ${synced}: ${count.stderr}`);
+    return { problems, notes };
+  }
+  const behind = Number(count.stdout.trim());
   notes.push(
     behind === 0
       ? `Up to date with ${manifest.template} at ${headSha.slice(0, 7)}.`
@@ -307,9 +318,23 @@ export function check({ cwd = process.cwd(), templateUrl } = {}) {
     (path) => files[path] !== "canonical" && existsSync(join(cwd, path)),
   );
   if (placeholderFiles.length > 0) {
-    const found = git(cwd, ["grep", "--no-index", "-nIE", PLACEHOLDER, "--", ...placeholderFiles]);
+    // Literal pathspecs, so a listed path is never read as pathspec magic, and NUL separators, so a path with a
+    // colon in it parses. git grep exits 1 when nothing matches, and higher on an error.
+    const found = git(cwd, [
+      "--literal-pathspecs",
+      "grep",
+      "--no-index",
+      "-z",
+      "-nIE",
+      PLACEHOLDER,
+      "--",
+      ...placeholderFiles,
+    ]);
+    if (found.status !== 0 && found.status !== 1) {
+      problems.push(`could not scan for placeholders: ${found.stderr}`);
+    }
     for (const match of found.stdout.split("\n").filter(Boolean)) {
-      const [path, line] = match.split(":");
+      const [path, line] = match.split("\0");
       problems.push(`${path}:${line}: placeholder left behind`);
     }
   }
