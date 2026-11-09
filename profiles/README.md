@@ -179,13 +179,14 @@ git grep -nE 'project:(start|end)|\.template/'
 
 ## Changing the template
 
-`.github/workflows/template.yml` creates a project from each profile, with the steps above on its own checkout, and runs that profile's gate; it is the check branch protection requires. To run the same locally, create a project in a scratch clone:
+`.github/workflows/template.yml` creates a project from each profile, with the steps above on its own checkout, runs that profile's gate, and then runs `profiles/hooks.test.sh`, which commits through the created project's hooks and checks what each one accepts, refuses, and rewrites; it is the check branch protection requires. The gate checks files, not hooks, so without that script a broken hook would reach every new project with nothing failing. To run the same locally, create a project in a scratch clone:
 
 ```sh
-dir="$(mktemp -d)/check" && git clone --quiet . "$dir" && cd "$dir"
+template="$(pwd)" && dir="$(mktemp -d)/check" && git clone --quiet . "$dir" && cd "$dir"
 rm .github/workflows/template.yml .github/dependabot.yml
 cp -R profiles/node-pnpm/. . && rm -r profiles
 nvm install && pnpm install && pnpm verify
+sh "$template/profiles/hooks.test.sh"
 ```
 
-The clone holds what is committed, so commit first, on a branch.
+The clone holds what is committed, so commit first, on a branch; the hook check runs from the working tree. It commits and resets in the clone, which is why it runs there and never in a checkout you work in. On Windows, run these from Git Bash, and give nvm for Windows the version, as the profile's [Tooling](node-pnpm/docs/tooling.md#setup) says.

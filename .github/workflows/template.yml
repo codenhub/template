@@ -25,6 +25,11 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      # Creating the project deletes `profiles/`, and with it the hook check the last step runs.
+      - name: Keep the hook check
+        run: cp profiles/hooks.test.sh "$RUNNER_TEMP/hooks.test.sh"
+        shell: bash
+
       # The same steps `profiles/README.md` gives for creating a project, run on this disposable checkout.
       - name: Create a project from node-pnpm
         run: |
@@ -38,3 +43,8 @@ jobs:
 
       - name: Verify
         run: pnpm verify
+
+      # Commits through the created project's hooks: the gate checks the files, not what the hooks do.
+      - name: Hooks
+        run: sh "$RUNNER_TEMP/hooks.test.sh"
+        shell: bash
