@@ -1,6 +1,6 @@
 # Line endings are normalized to LF in the repository and in the working tree.
-# oxfmt and Prettier write LF, so a CRLF checkout would fail `pnpm format:check`
-# on every file. `eol=lf` overrides a machine's `core.autocrlf`, which is what
+# The formatters write LF, so a CRLF checkout would fail the format check on
+# every file. `eol=lf` overrides a machine's `core.autocrlf`, which is what
 # makes the result the same on every platform.
 * text=auto eol=lf
 
