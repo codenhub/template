@@ -81,7 +81,7 @@ Rejected: **hooks per profile,** keeping a Node `pre-commit` in `node-pnpm` and 
 
 Rejected: **a plain data file** listing extension, fix command, and check command. It would look safer than shell code, but the hook is already shell code from the same repository, so it would add no protection, and the hook would need a parser for it whose quoting of arguments is where it would go wrong.
 
-A gap found in review of codenhub/template#18, where a project's other formatter was run by the hook but not by `pnpm format:check`, is narrowed, not closed: the formatter's commands sit side by side in the profile, in `profile.sh` and in the `format:*` scripts, and the profile's [Workspace](node-pnpm/docs/workspace.md#git-hooks) says to add them to both. Having the gate read `profile.sh` would close it, but `pnpm` runs scripts through `cmd` on Windows, where `sh` is not always on the path.
+A gap found in review of [codenhub/template#18](https://github.com/codenhub/template/pull/18), where a project's other formatter was run by the hook but not by `pnpm format:check`, is narrowed, not closed: the formatter's commands sit side by side in the profile, in `profile.sh` and in the `format:*` scripts, and the profile's [Workspace](node-pnpm/docs/workspace.md#git-hooks) says to add them to both. Having the gate read `profile.sh` would close it, but `pnpm` runs scripts through `cmd` on Windows, where `sh` is not always on the path.
 
 ### The layout is the project's
 
