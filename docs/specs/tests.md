@@ -1,6 +1,6 @@
 ---
 status: APPROVED
-last_updated: 2026-11-08
+last_updated: 2026-11-09
 scope: Test categories, where each lives, and coverage expectations.
 ---
 
@@ -13,7 +13,7 @@ This document defines how the project is tested: what kinds of tests exist, wher
 - **Test behavior, not implementation.** A test verifies what a caller can observe, not how the code produces it.
 - **Fast and deterministic.** A flaky test is a bug. Time, randomness, and the network come from sources a test controls; a test that depends on real timing, the network, or a real window does not belong in the default suite.
 - **Error paths count.** Failure cases are tested as carefully as the happy path, and inputs and edge cases early.
-- **No permanent absence checks.** A test asserting only that a removed name, class, or token is gone (`not.toContain("old-name")`) verifies nothing about current behavior: it is indistinguishable from asserting the absence of a string that never existed. Such a check earns its place only while a rename or removal is in flight, as a guard against a forgotten reference; delete it once the change is verified, in the same pull request. A durable rule, such as "no compatibility aliases", is a lint rule or repository check, not a permanent unit test.
+- **No permanent absence checks.** A test asserting only that a removed name, class, or token is gone, such as an assertion that some output does not contain `old-name`, verifies nothing about current behavior: it is indistinguishable from asserting the absence of a string that never existed. Such a check earns its place only while a rename or removal is in flight, as a guard against a forgotten reference; delete it once the change is verified, in the same pull request. A durable rule, such as "no compatibility aliases", is a lint rule or repository check, not a permanent unit test.
 
 ## Categories
 

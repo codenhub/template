@@ -1,6 +1,6 @@
 ---
 status: APPROVED
-last_updated: 2026-11-08
+last_updated: 2026-11-09
 scope: How code keeps the project's security commitments, for anyone writing or reviewing a change.
 ---
 
@@ -14,7 +14,7 @@ This document says how code handles secrets, untrusted input, and what leaves th
 
 When the project stores or issues secrets:
 
-- **Random values** for anything security-relevant come from a cryptographically secure source, such as `crypto.getRandomValues` or `crypto.randomUUID`, injected where code needs to be testable. Never `Math.random`.
+- **Random values** for anything security-relevant come from the runtime's cryptographically secure generator, such as `crypto.getRandomValues` in JavaScript or `secrets` in Python, injected where code needs to be testable. Never a general-purpose generator such as `Math.random` or `random`.
 - **High-entropy tokens** the project issues, such as session ids, one-time codes, reset tokens, and API keys, are stored as a digest, never as the value. A leaked database then holds nothing a client can present.
 - **Passwords** go through a memory-hard key derivation function where the runtime allows, with the algorithm and parameters stored next to each hash so they can be upgraded on the next login.
 - **Recoverable secrets**, ones the project must read back, are encrypted with an authenticated cipher, with a key id stored beside each ciphertext so the key can be rotated.

@@ -1,6 +1,6 @@
 ---
 status: IMPLEMENTED
-last_updated: 2026-11-08
+last_updated: 2026-11-09
 scope: How documentation under `docs/` is structured, maintained, interpreted, and written, including this document.
 ---
 
@@ -41,7 +41,7 @@ A file that is itself a template for consumer-facing output, such as a README te
 
 Markdown in this repository is not hard-wrapped. Write each paragraph and list item as a single line and let the editor wrap it on screen. Markdown renders a lone newline inside a paragraph as a space, so wrapped and unwrapped source read identically once rendered, and leaving prose unwrapped keeps an edit to one word from reflowing a whole paragraph in the diff.
 
-The project's Markdown formatter enforces this, through the gate and the pre-commit hook; [tooling](../tooling.md) names it and the setting that does it. The rule is the formatter's to keep: do not hand-wrap prose to a column, and do not give Markdown a line length in editor configuration. `.editorconfig` sets `max_line_length = off` for Markdown, which says the same to editors and to formatters that read it. Third-party Markdown listed in the formatter's ignore file is kept as received. Agent skills are formatted like the rest, but with their fenced examples left as written: an agent reads a skill as raw text, where an example's line breaks are part of what it shows.
+The project's Markdown formatter enforces this, through the gate and the pre-commit hook; [tooling](../tooling.md) names it and the setting that does it. The rule is the formatter's to keep: do not hand-wrap prose to a column, and do not give Markdown a line length in editor configuration. The profile's `.editorconfig`, when it has one, sets `max_line_length = off` for Markdown, which says the same to editors and to formatters that read it. Third-party Markdown listed in the formatter's ignore file is kept as received.
 
 ## Prompts
 
