@@ -7,7 +7,7 @@ export default defineConfig({
     projects: [
       // The repository's own scripts. It also keeps the list from being empty, which Vitest refuses, before
       // the first package exists.
-      { test: { name: "root", include: ["scripts/**/*.test.ts"] } },
+      { test: { name: "root", include: ["scripts/**/*.test.ts", "scripts/**/*.test.mjs"] } },
       "packages/*/vitest.config.ts",
       "apps/*/vitest.config.ts",
     ],
