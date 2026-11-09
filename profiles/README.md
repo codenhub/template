@@ -114,7 +114,6 @@ Rejected: **a second profile now,** to prove the core is neutral. A profile nobo
    | ----------------- | ----------------------------------------------------- | -------------------- |
    | `{{name}}`        | The project's display name.                           | `Acme Notes`         |
    | `{{slug}}`        | The repository and root package name.                 | `acme-notes`         |
-   | `{{scope}}`       | The npm scope of workspace packages, without the `@`. | `acme-notes`         |
    | `{{description}}` | One sentence saying what the project is.              | `A note-taking app.` |
    | `{{owner}}`       | The GitHub owner, a user or organization.             | `acme`               |
    | `{{holder}}`      | The copyright holder.                                 | `Acme`               |
@@ -125,7 +124,7 @@ Rejected: **a second profile now,** to prove the core is neutral. A profile nobo
 4. Check that no placeholder is left; this prints nothing when none is, and searches files not yet added to git too:
 
    ```sh
-   git grep --untracked -nE '\{\{(name|slug|scope|description|owner|holder|year|setup|verify)\}\}'
+   git grep --untracked -nE '\{\{(name|slug|description|owner|holder|year|setup|verify)\}\}'
    ```
 
 5. Run the setup commands and the gate.
@@ -149,7 +148,7 @@ The first command compares the core, and the second the profile: `FETCH_HEAD:pro
 
 Judge each change on its own rather than each file: one file can hold a better section from each side. The project's placeholder values show up as differences on the lines that hold them, and are not changes to judge.
 
-To take the template's version of a whole file, run `git checkout FETCH_HEAD -- <path>` for a core file, or `git show FETCH_HEAD:profiles/node-pnpm/<path> > <path>` for a profile file, and restore the project's own values in it. `pnpm-lock.yaml` is never copied: after taking a change to `package.json` or `pnpm-workspace.yaml`, `pnpm install` regenerates it.
+To take the template's version of a whole file, run `git checkout FETCH_HEAD -- <path>` for a core file, or `git show FETCH_HEAD:profiles/node-pnpm/<path> > <path>.new && mv <path>.new <path>` for a profile file, so a mistyped path leaves the project's file as it was, and restore the project's own values in it. `pnpm-lock.yaml` is never copied: after taking a change to `package.json` or `pnpm-workspace.yaml`, `pnpm install` regenerates it.
 
 A project created before the split into profiles compares the same way: its stack files are the `node-pnpm` profile's.
 
