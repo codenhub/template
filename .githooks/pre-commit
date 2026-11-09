@@ -61,10 +61,11 @@ on_ext() {
 # them reads, as a `grep -E` alternation, and PROFILE_FIX_HINT; and it defines
 # profile_fix, which rewrites, and profile_check, which checks, the
 # newline-delimited file list in "$1", typically through on_ext.
+# Without one there is nothing to run, as in the template repository, whose
+# profiles are checked by its own workflow instead.
 if [ ! -f .githooks/profile.sh ]; then
-  PROFILE_FIX_HINT='Add .githooks/profile.sh'
-  printf 'pre-commit: .githooks/profile.sh is missing, so nothing says what to check.\n' >&2
-  exit 1
+  printf 'pre-commit: no .githooks/profile.sh, so no stack checks ran.\n' >&2
+  exit 0
 fi
 . ./.githooks/profile.sh
 
