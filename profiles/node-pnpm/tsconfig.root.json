@@ -13,5 +13,5 @@
     "checkJs": true,
     "tsBuildInfoFile": "./node_modules/.cache/tsconfig.root.tsbuildinfo"
   },
-  "include": ["*.ts", "scripts/**/*.ts"]
+  "include": ["*.ts", "*.mjs", "scripts/**/*.ts", "scripts/**/*.mjs"]
 }

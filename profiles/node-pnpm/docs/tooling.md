@@ -1,6 +1,6 @@
 ---
 status: IMPLEMENTED
-last_updated: 2026-11-08
+last_updated: 2026-11-09
 scope: Setup, how the root scripts are implemented, the TypeScript and Vitest configuration, narrowing a run, and adding a package.
 ---
 
@@ -43,12 +43,12 @@ Setup needs pnpm 10 or later on the `PATH`, installed apart from Node.js, with t
 
 ## TypeScript and Vitest
 
-| File                 | Configures                                                                                                                                                                                                                                                                        |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `tsconfig.base.json` | The compiler settings every project shares: strict, `noUncheckedIndexedAccess`, `verbatimModuleSyntax`, bundler resolution, and type-checking only (`noEmit`).                                                                                                                    |
-| `tsconfig.json`      | The solution `tsc -b` builds. It lists projects and holds no files.                                                                                                                                                                                                               |
-| `tsconfig.root.json` | The project for code outside the packages: root config files such as `vitest.config.ts`, and `scripts/`. Node.js runs these directly, so it checks them by Node's rules: Node.js types, NodeNext resolution, and relative imports with the file's own extension, `.ts` or `.mjs`. |
-| `vitest.config.ts`   | The Vitest projects: the root project for `scripts/`, and every package and app with a `vitest.config.ts`.                                                                                                                                                                        |
+| File                 | Configures                                                                                                                                                                                                                                                                                            |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tsconfig.base.json` | The compiler settings every project shares: strict, `noUncheckedIndexedAccess`, `verbatimModuleSyntax`, bundler resolution, and type-checking only (`noEmit`).                                                                                                                                        |
+| `tsconfig.json`      | The solution `tsc -b` builds. It lists projects and holds no files.                                                                                                                                                                                                                                   |
+| `tsconfig.root.json` | The project for code outside the packages: root config files such as `vitest.config.ts`, and `scripts/`, in `.ts` or `.mjs`. Node.js runs these directly, so it checks them by Node's rules: Node.js types, NodeNext resolution, and relative imports with the file's own extension, `.ts` or `.mjs`. |
+| `vitest.config.ts`   | The Vitest projects: the root project for the `.ts` and `.mjs` tests in `scripts/`, and every package and app with a `vitest.config.ts`.                                                                                                                                                              |
 
 ### The empty workspace
 

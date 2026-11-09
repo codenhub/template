@@ -1,6 +1,6 @@
 ---
 status: APPROVED
-last_updated: 2026-11-08
+last_updated: 2026-11-09
 scope: Coding conventions for every part of the project, in any language.
 ---
 
@@ -63,7 +63,7 @@ Exceptions: framework callbacks, test helpers, tiny local functions, and APIs wh
 
 ## Inputs, failures, and state
 
-Most review findings that hold up are about these, not about style: the [review study in codenhub/codenhub](https://github.com/codenhub/codenhub/blob/main/packages/skills/docs/internal/coding-skill-research.md) records the evidence.
+Most review findings that hold up are about these, not about style: a [study of the review threads in codenhub/codenhub](https://github.com/codenhub/codenhub/blob/37b44e7adc31f628c94fb9ff8bd257c869f64996/packages/skills/docs/internal/coding-skill-research.md), a monorepo whose code agents wrote, records the evidence.
 
 - Validate input from outside the code's control after it is converted, against the limits of what consumes it: `--timeout 1e308` passes "positive number" and becomes an infinite timer. Reject empty, whitespace-only, NaN, Infinity, and partial numbers such as `10s`.
 - When required input is missing or matches nothing, fail with a message naming it. A run whose required input was absent never reports success.
@@ -84,7 +84,7 @@ Most review findings that hold up are about these, not about style: the [review 
 - Prefer observable behavior to implementation details.
 - A change in behavior changes its tests in the same change.
 
-Mocking the filesystem and storage everywhere was the earlier rule. It was narrowed because a mock answers only what the test tells it, so it cannot show the containment, symlink, and stale-output bugs recorded in codenhub/codenhub#24, codenhub/codenhub#25, and codenhub/codenhub#293; a real temporary directory does.
+Mocking the filesystem and storage everywhere was the earlier rule. It was narrowed because a mock answers only what the test tells it, so it cannot show the containment, symlink, and stale-output bugs found in review threads on [codenhub/codenhub#24](https://github.com/codenhub/codenhub/pull/24#discussion_r3875960231), [#25](https://github.com/codenhub/codenhub/pull/25#discussion_r3888570403), and [#293](https://github.com/codenhub/codenhub/pull/293#discussion_r4304630356); a real temporary directory does.
 
 The [testing specification](../specs/tests.md) defines the test categories, configuration, scripts, and coverage target.
 
