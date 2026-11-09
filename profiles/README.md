@@ -93,9 +93,15 @@ The first profile was extracted from what the template was before the split, so 
 
 Rejected: **a second profile now,** to prove the core is neutral. A profile nobody uses is a profile nobody verifies; it would look supported and be wrong in ways only its first user finds.
 
-### Open questions
+### The label list is a `sh` script
 
-- **The label sync command.** `CONTRIBUTING.md` creates the labels with `node -e`, which a project without Node.js cannot run. Candidates: a `sh` loop over `gh label create` that needs `jq`, or the command as a profile value.
+`.github/labels.sh` lists the labels, one `label` line each, and creates or updates them through `gh` when run. It needs only `gh` and the `sh` that git ships on every platform, which on Windows is reachable from PowerShell or `cmd` through a git alias, as `CONTRIBUTING.md` shows; the hooks rely on the same `sh`.
+
+Rejected: **a JSON list read by `node -e`,** the earlier design. A project without Node.js could not run it.
+
+Rejected: **a JSON list read by a `sh` loop through `jq`.** `jq` is not installed by default on Windows or on many Linux systems.
+
+Rejected: **the command as a profile value.** Each profile would carry its own command for a list that holds the same labels in every stack.
 
 ## Creating a project
 

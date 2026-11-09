@@ -42,10 +42,16 @@ A single-package project has neither `pkg:` nor `app:` labels. `status:upstream`
 
 <!-- Label groups only this project uses, as a table like the one above, such as where a defect surfaced for a project whose packages are used elsewhere. -->
 
-`.github/labels.json` holds the list. Unless the project derives its `pkg:` and `app:` labels with a command of its own, recorded below, add an entry in the change that adds the member. After editing the list, create or update the labels on GitHub through `gh`:
+`.github/labels.sh` holds the list, one `label` line per label. Unless the project derives its `pkg:` and `app:` labels with a command of its own, recorded below, add a line in the change that adds the member. After editing the list, create or update the labels on GitHub through `gh` by running it:
 
 ```sh
-node -e 'for (const l of require("./.github/labels.json")) require("node:child_process").execFileSync("gh", ["label", "create", l.name, "--color", l.color, "--description", l.description, "--force"], { stdio: "inherit" })'
+sh .github/labels.sh
+```
+
+From PowerShell or `cmd`, which have no `sh`, run it through the one Git for Windows ships:
+
+```sh
+git -c "alias.labels=!sh .github/labels.sh" labels
 ```
 
 It never deletes a label: deleting one strips it from every issue that carries it, so a label that is no longer listed is removed by hand.
