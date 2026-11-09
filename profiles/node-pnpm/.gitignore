@@ -21,7 +21,9 @@ playwright-report
 .env.*
 !.env.example
 
-# AI agents: local settings, sessions, and worktrees.
+# AI agents: every directory, including what a tool means to be shared, such as settings or skills.
+# Contributors use different harnesses, skills, and settings, so committed agent configuration would
+# impose one person's setup on everyone else. AGENTS.md is the shared instruction every harness reads.
 .agents
 .antigravity
 .claude
