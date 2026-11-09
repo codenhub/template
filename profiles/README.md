@@ -135,7 +135,7 @@ Rejected: **the command as a profile value.** Each profile would carry its own c
 
    It matches any placeholder, including one a document uses that the table above misses, and not a GitHub Actions expression, which starts with `$`, such as `${{ github.ref }}` or `${{true}}`.
 
-5. Run the setup commands and the gate.
+5. Run the setup commands, the profile's format fix (`pnpm format:fix` for `node-pnpm`), and the gate. Replacing placeholders of different lengths can leave Markdown tables unaligned, and the format fix re-aligns them so the gate passes.
 
 The HTML comments in the documents are prompts for what the project writes in each section; the [documentation guidelines](../docs/guidelines/documentation.md#prompts) say what to do with them, and stay in the project once this directory is gone.
 
