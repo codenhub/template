@@ -15,11 +15,13 @@ Markdown is formatted by Prettier with `proseWrap: "never"`, set in `.prettierrc
 ## Setup
 
 ```sh
-nvm use
+nvm install
 pnpm install
 ```
 
-`.nvmrc` pins Node.js, which `nvm use` reads, and the `packageManager` field in `package.json` pins pnpm, which pnpm installs before it runs. [Workspace](workspace.md#toolchain) covers why the versions are pinned where they are.
+Setup needs pnpm 10 or later on the `PATH`, installed as [pnpm's installation guide](https://pnpm.io/installation) describes; any such version switches itself to the one the `packageManager` field in `package.json` pins before it runs. Node.js does not bring pnpm with it: Node.js 24 ships Corepack switched off, and later versions do not ship it at all.
+
+`.nvmrc` pins Node.js. `nvm install` reads it, downloads that version when it is missing, and switches to it; with another version manager, install and use the version `.nvmrc` names. [Workspace](workspace.md#toolchain) covers why the versions are pinned where they are.
 
 `pnpm install` runs the root `prepare` script, which points git at `.githooks/` through `core.hooksPath`. If lifecycle scripts were disabled during the install, run `git config core.hooksPath .githooks`.
 

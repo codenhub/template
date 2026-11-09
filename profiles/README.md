@@ -38,9 +38,9 @@ Rejected alternatives:
 
 The repository root is a stack-neutral core: the process, the agent instructions, the hooks, and the documentation that holds in any language. Each directory under `profiles/` holds one stack's files, at the paths they take in a project. Creating a project lays one profile over the core.
 
-| Profile     | `{{setup}}`                    | `{{verify}}`  |
-| ----------- | ------------------------------ | ------------- |
-| `node-pnpm` | `nvm use`, then `pnpm install` | `pnpm verify` |
+| Profile     | `{{setup}}`                        | `{{verify}}`  |
+| ----------- | ---------------------------------- | ------------- |
+| `node-pnpm` | `nvm install`, then `pnpm install` | `pnpm verify` |
 
 Rejected: **one template repository per stack.** Each would be simpler alone, but every change to the process, the agent instructions, or the documentation guidelines would be repeated in each repository, and they would drift apart. Keeping the core in one place is the reason to split at all.
 
@@ -110,16 +110,16 @@ Rejected: **a second profile now,** to prove the core is neutral. A profile nobo
 
 3. Replace every placeholder:
 
-   | Placeholder       | Replaced with                                         | Example              |
-   | ----------------- | ----------------------------------------------------- | -------------------- |
-   | `{{name}}`        | The project's display name.                           | `Acme Notes`         |
-   | `{{slug}}`        | The repository and root package name.                 | `acme-notes`         |
-   | `{{description}}` | One sentence saying what the project is.              | `A note-taking app.` |
-   | `{{owner}}`       | The GitHub owner, a user or organization.             | `acme`               |
-   | `{{holder}}`      | The copyright holder.                                 | `Acme`               |
-   | `{{year}}`        | The year the project was created.                     | `2026`               |
-   | `{{setup}}`       | The profile's setup commands, one per line.           | From the table above |
-   | `{{verify}}`      | The profile's delivery gate.                          | From the table above |
+   | Placeholder       | Replaced with                               | Example              |
+   | ----------------- | ------------------------------------------- | -------------------- |
+   | `{{name}}`        | The project's display name.                 | `Acme Notes`         |
+   | `{{slug}}`        | The repository and root package name.       | `acme-notes`         |
+   | `{{description}}` | One sentence saying what the project is.    | `A note-taking app.` |
+   | `{{owner}}`       | The GitHub owner, a user or organization.   | `acme`               |
+   | `{{holder}}`      | The copyright holder.                       | `Acme`               |
+   | `{{year}}`        | The year the project was created.           | `2026`               |
+   | `{{setup}}`       | The profile's setup commands, one per line. | From the table above |
+   | `{{verify}}`      | The profile's delivery gate.                | From the table above |
 
 4. Check that no placeholder is left; this prints nothing when none is, and searches files not yet added to git too:
 
@@ -177,7 +177,7 @@ git grep -nE 'project:(start|end)|\.template/'
 dir="$(mktemp -d)/check" && git clone --quiet . "$dir" && cd "$dir"
 rm .github/workflows/template.yml .github/dependabot.yml
 cp -R profiles/node-pnpm/. . && rm -r profiles
-nvm use && pnpm install && pnpm verify
+nvm install && pnpm install && pnpm verify
 ```
 
 The clone holds what is committed, so commit first, on a branch.
