@@ -1,10 +1,13 @@
 # The template repository's own updates, template-only: creating a project deletes this file, and the profile's
 # `.github/dependabot.yml` takes its place. It points at the profile's directories, where the dependencies
 # and the setup action now live; `profiles/node-pnpm/.github/dependabot.yml` says why each setting is what it is.
+#
+# The profile's workflows are listed by their own directory. Dependabot reads `.github/workflows/` only for `/`;
+# for any other directory, it reads only the YAML files directly inside it.
 version: 2
 updates:
   - package-ecosystem: github-actions
-    directories: ["/", "/profiles/node-pnpm", "/profiles/node-pnpm/.github/actions/*"]
+    directories: ["/", "/profiles/node-pnpm/.github/workflows", "/profiles/node-pnpm/.github/actions/*"]
     schedule:
       interval: weekly
     labels: ["type:chore"]

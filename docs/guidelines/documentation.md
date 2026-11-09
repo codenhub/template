@@ -33,7 +33,7 @@ scope: Area governed by this document.
 ---
 ```
 
-The header is YAML rather than bold lines in the body because a tool can read it without parsing prose, and because Prettier, which keeps Markdown unwrapped, would otherwise join the lines into one.
+The header is YAML rather than bold lines in the body because a tool can read it without parsing prose, and because the Markdown formatter, which keeps Markdown unwrapped, would otherwise join the lines into one.
 
 A file that is itself a template for consumer-facing output, such as a README template a generator copies, carries no frontmatter, so repository governance never leaks into what it produces. Repository status is also never package stability or consumer support metadata, and a tool MUST NOT read it as such.
 
@@ -41,7 +41,7 @@ A file that is itself a template for consumer-facing output, such as a README te
 
 Markdown in this repository is not hard-wrapped. Write each paragraph and list item as a single line and let the editor wrap it on screen. Markdown renders a lone newline inside a paragraph as a space, so wrapped and unwrapped source read identically once rendered, and leaving prose unwrapped keeps an edit to one word from reflowing a whole paragraph in the diff.
 
-The project's Markdown formatter enforces this, through the gate and the pre-commit hook; [tooling](../tooling.md) names it and the setting that does it. The rule is the formatter's to keep: do not hand-wrap prose to a column, and do not give Markdown a line length in editor configuration. `.editorconfig` sets `max_line_length = off` for Markdown, which says the same to editors and is how Prettier reads an unlimited width. Third-party Markdown listed in the formatter's ignore file is kept as received. Agent skills are formatted like the rest, but with their fenced examples left as written: an agent reads a skill as raw text, where an example's line breaks are part of what it shows.
+The project's Markdown formatter enforces this, through the gate and the pre-commit hook; [tooling](../tooling.md) names it and the setting that does it. The rule is the formatter's to keep: do not hand-wrap prose to a column, and do not give Markdown a line length in editor configuration. `.editorconfig` sets `max_line_length = off` for Markdown, which says the same to editors and to formatters that read it. Third-party Markdown listed in the formatter's ignore file is kept as received. Agent skills are formatted like the rest, but with their fenced examples left as written: an agent reads a skill as raw text, where an example's line breaks are part of what it shows.
 
 ## Prompts
 
