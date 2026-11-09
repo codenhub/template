@@ -124,8 +124,10 @@ Rejected: **a second profile now,** to prove the core is neutral. A profile nobo
 4. Check that no placeholder is left; this prints nothing when none is, and searches files not yet added to git too:
 
    ```sh
-   git grep --untracked -nE '\{\{(name|slug|description|owner|holder|year|setup|verify)\}\}'
+   git grep --untracked -nE '\{\{[a-z]+\}\}'
    ```
+
+   It matches any placeholder, including one a document uses that the table above misses, and not a GitHub Actions expression such as `${{ github.ref }}`, whose spaces it does not allow.
 
 5. Run the setup commands and the gate.
 
