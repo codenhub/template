@@ -1,0 +1,27 @@
+# The template repository's own updates, template-only: creating a project deletes this file, and the profile's
+# `.github/dependabot.yml` takes its place. It points at the profile's directories, where the dependencies
+# and the setup action now live; `profiles/node-pnpm/.github/dependabot.yml` says why each setting is what it is.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directories: ["/", "/profiles/node-pnpm", "/profiles/node-pnpm/.github/actions/*"]
+    schedule:
+      interval: weekly
+    labels: ["type:chore"]
+    groups:
+      actions:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: npm
+    directory: /profiles/node-pnpm
+    schedule:
+      interval: weekly
+    labels: ["type:chore"]
+    ignore:
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+    groups:
+      npm:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
