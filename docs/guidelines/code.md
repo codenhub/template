@@ -84,7 +84,7 @@ Most review findings that hold up are about these, not about style: a [study of 
 - Prefer observable behavior to implementation details.
 - A change in behavior changes its tests in the same change.
 
-Mocking the filesystem and storage everywhere was the earlier rule. It was narrowed because a mock answers only what the test tells it, so it cannot show the containment, symlink, and stale-output bugs that review found in codenhub/codenhub ([1](https://github.com/codenhub/codenhub/pull/24#discussion_r3875960231), [2](https://github.com/codenhub/codenhub/pull/25#discussion_r3888570403), [3](https://github.com/codenhub/codenhub/pull/293#discussion_r4304630356)); a real temporary directory does.
+Mocking the filesystem and storage everywhere was the earlier rule. It was narrowed because a mock answers only what the test tells it, so it cannot show the containment, symlink, and stale-output bugs found in review threads on [codenhub/codenhub#24](https://github.com/codenhub/codenhub/pull/24#discussion_r3875960231), [#25](https://github.com/codenhub/codenhub/pull/25#discussion_r3888570403), and [#293](https://github.com/codenhub/codenhub/pull/293#discussion_r4304630356); a real temporary directory does.
 
 The [testing specification](../specs/tests.md) defines the test categories, configuration, scripts, and coverage target.
 
