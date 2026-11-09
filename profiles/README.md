@@ -130,7 +130,7 @@ Rejected: **the command as a profile value.** Each profile would carry its own c
 4. Check that no placeholder is left; this prints nothing when none is, and searches files not yet added to git too:
 
    ```sh
-   git grep --untracked -nE '(^|[^$])\{\{[a-z]+\}\}'
+   git grep --untracked -nE '(^|[^$])\{\{[a-z0-9_]+\}\}'
    ```
 
    It matches any placeholder, including one a document uses that the table above misses, and not a GitHub Actions expression, which starts with `$`, such as `${{ github.ref }}` or `${{true}}`.
