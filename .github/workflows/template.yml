@@ -1,0 +1,40 @@
+# The template repository's own check: each profile laid over the core, as creating a project does, must pass
+# that profile's gate. Template-only, like `profiles/`: creating a project deletes this file.
+name: Template
+
+on:
+  pull_request:
+  merge_group:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  # Named `Verify`, the check branch protection requires, while `node-pnpm` is the only profile.
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # The same steps `profiles/README.md` gives for creating a project, run on this disposable checkout.
+      - name: Create a project from node-pnpm
+        run: |
+          rm -r .github/workflows/template.yml .github/dependabot.yml
+          cp -R profiles/node-pnpm/. .
+          rm -r profiles
+        shell: bash
+
+      - name: Set up the workspace
+        uses: ./.github/actions/setup
+
+      - name: Verify
+        run: pnpm verify

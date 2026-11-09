@@ -6,16 +6,15 @@ This document defines the contributor workflow, from a working tree through vali
 
 ## Setup
 
-The toolchain is pinned, and an install outside it fails rather than warns. With `nvm`, `nvm use` reads `.nvmrc`; pnpm installs the version `packageManager` names.
+Setup installs the project's pinned toolchain and dependencies:
 
 ```sh
-nvm use
-pnpm install
+{{setup}}
 ```
 
-`pnpm install` also points git at `.githooks/` through `core.hooksPath`, so the hooks described below start working after the first install and not before. If lifecycle scripts were disabled during the install, run `node .githooks/install.mjs`. [CI](docs/ci.md) covers why the versions are pinned where they are.
+Setup also points git at `.githooks/` through `core.hooksPath`, so the hooks described below start working after it and not before. [Tooling](docs/tooling.md#setup) says where each version is pinned, what happens outside it, and how to point git at the hooks by hand.
 
-<!-- Prerequisites beyond Node and pnpm, such as another toolchain or platform SDK, and the command that starts the project for development. -->
+<!-- Prerequisites beyond the toolchain above, such as another toolchain or platform SDK, and the command that starts the project for development. -->
 
 ## Changes
 
@@ -35,15 +34,15 @@ Each issue carries one label from each group that applies:
 | Group     | Labels                                        | Says                                 |
 | --------- | --------------------------------------------- | ------------------------------------ |
 | `type:`   | `bug`, `feature`, `security`, `docs`, `chore` | What kind of work it is              |
-| `pkg:`    | one per workspace package, by unscoped name   | Which package it is in               |
-| `app:`    | one per app, by directory name                | Which app it is in                   |
+| `pkg:`    | one per library member, by its commit scope   | Which package it is in               |
+| `app:`    | one per application member, by commit scope   | Which app it is in                   |
 | `status:` | `needs-triage`, `blocked`, `upstream`         | Why it is not moving, when it is not |
 
-`status:upstream` means the issue waits on a change in a dependency you maintain, as [below](#a-defect-found-mid-task) describes.
+A single-package project has neither `pkg:` nor `app:` labels. `status:upstream` means the issue waits on a change in a dependency you maintain, as [below](#a-defect-found-mid-task) describes.
 
 <!-- Label groups only this project uses, as a table like the one above, such as where a defect surfaced for a project whose packages are used elsewhere. -->
 
-`.github/labels.json` holds the list. Unless the project derives its `pkg:` and `app:` labels with a command of its own, recorded below, add an entry in the change that adds the package or app. After editing the list, create or update the labels on GitHub through `gh`:
+`.github/labels.json` holds the list. Unless the project derives its `pkg:` and `app:` labels with a command of its own, recorded below, add an entry in the change that adds the member. After editing the list, create or update the labels on GitHub through `gh`:
 
 ```sh
 node -e 'for (const l of require("./.github/labels.json")) require("node:child_process").execFileSync("gh", ["label", "create", l.name, "--color", l.color, "--description", l.description, "--force"], { stdio: "inherit" })'
@@ -116,7 +115,7 @@ One of `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `rever
 
 ### Scope
 
-The area the change lands in, and optional. For a workspace package it is the package name without its npm scope; for a package nested a level deeper, such as `packages/plugins/vite`, it is the path under `packages/`, as in `plugins/vite`. For an app it is the directory name under `apps/`. Repository-level areas use their own name, such as `ci`, `deps`, or `docs`. Leave it out when the change spans several.
+The area the change lands in, and optional. In a workspace, each member the project declares is an area: its scope is the member's name without a namespace such as an npm scope, and for a member nested a level deeper than its kind, such as `packages/plugins/vite`, the path below that level, as in `plugins/vite`. Repository-level areas use their own name, such as `ci`, `deps`, or `docs`. Leave it out when the change spans several.
 
 <!-- Scopes this project uses beyond the rule above, such as the areas of a single-package project, with what each covers. -->
 
@@ -157,12 +156,12 @@ The human directing the work stays the commit author. The trailer is an addition
 Run scripts from the repository root. During development, narrow checks to what changed; [tooling](docs/tooling.md) lists the commands and how to narrow them. Before delivering a change, run the gate this section names; unless it names a narrower one, that is the whole gate:
 
 ```sh
-pnpm verify
+{{verify}}
 ```
 
-It runs formatting, linting, the build, type checking, and tests, the same checks CI runs. Report any step that was skipped or failed.
+It runs the same checks CI runs. Report any step that was skipped or failed.
 
-<!-- The gate before delivering a change when it is not plain `pnpm verify`, such as a run narrowed to changed packages that CI completes, and checks `pnpm verify` does not run and when to run them, such as browser suites or a check for a generated file. -->
+<!-- The gate before delivering a change when it is not plain `{{verify}}`, such as a run narrowed to changed packages that CI completes, and checks `{{verify}}` does not run and when to run them, such as browser suites or a check for a generated file. -->
 
 ## Pull requests
 

@@ -1,16 +1,10 @@
-# Weekly update pull requests, labelled with the repository's own `type:chore` rather than labels Dependabot
-# would create. npm updates arrive as catalog changes in pnpm-workspace.yaml, with the lockfile.
-#
-# The groups take minor and patch updates only, so one week is one grouped pull request per directory:
-# Dependabot groups each listed directory on its own, so the actions can arrive as two pull requests. A
-# major update arrives as a pull request of its own, because it is a decision (it may need code changes)
-# rather than upkeep, and a group that mixes one in cannot be merged until the major is dealt with.
-# `docs/ci.md`, "Pinning third-party actions", records why the actions are updated this way.
+# The template repository's own updates, template-only: creating a project deletes this file, and the profile's
+# `.github/dependabot.yml` takes its place. It points at the profile's directories, where the dependencies
+# and the setup action now live; `profiles/node-pnpm/.github/dependabot.yml` says why each setting is what it is.
 version: 2
 updates:
   - package-ecosystem: github-actions
-    # The workflows, and the composite actions under .github/actions/, which `directory: /` alone misses.
-    directories: ["/", "/.github/actions/*"]
+    directories: ["/", "/profiles/node-pnpm", "/profiles/node-pnpm/.github/actions/*"]
     schedule:
       interval: weekly
     labels: ["type:chore"]
@@ -20,12 +14,10 @@ updates:
         update-types: ["minor", "patch"]
 
   - package-ecosystem: npm
-    directory: /
+    directory: /profiles/node-pnpm
     schedule:
       interval: weekly
     labels: ["type:chore"]
-    # Node's types follow the Node release in `engines` and `.nvmrc`, so they move when Node does, not on
-    # their own: types for a newer Node accept APIs the pinned runtime does not have.
     ignore:
       - dependency-name: "@types/node"
         update-types: ["version-update:semver-major"]

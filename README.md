@@ -4,21 +4,18 @@
 
 ## Repository
 
-A pnpm workspace:
+<!-- Where the code lives, such as the workspace members and what each holds, as items of the list below. -->
 
-- `apps/`: the applications.
-- `packages/`: the workspace packages, published as `@{{scope}}/<name>` when they are published at all.
 - `docs/`: the guidelines, specifications, and references the code follows.
 
 ## Development
 
 ```sh
-nvm use
-pnpm install
-pnpm verify
+{{setup}}
+{{verify}}
 ```
 
-`pnpm verify` runs formatting, linting, the build, type checking, and tests. [Tooling](docs/tooling.md) describes every script.
+`{{verify}}` runs every check CI runs. [Tooling](docs/tooling.md) describes each command.
 
 ## Documentation
 

@@ -1,7 +1,7 @@
 ---
 status: IMPLEMENTED
 last_updated: 2026-11-08
-scope: How the root scripts are implemented, the TypeScript and Vitest configuration, narrowing a run, and adding a package.
+scope: Setup, how the root scripts are implemented, the TypeScript and Vitest configuration, narrowing a run, and adding a package.
 ---
 
 # Tooling
@@ -9,6 +9,19 @@ scope: How the root scripts are implemented, the TypeScript and Vitest configura
 [Workspace](workspace.md) names the root scripts and what each one guarantees. This document is how this project implements them.
 
 Every script runs from the repository root. There is no workspace CLI: the scripts call pnpm, Vitest, `tsc`, oxlint, oxfmt and Prettier directly, so each one is a command a contributor can read in `package.json` and run on its own. A workspace that outgrows plain scripts adds a CLI as a package of its own; until then a wrapper would be one more thing to learn and to keep in step.
+
+Markdown is formatted by Prettier with `proseWrap: "never"`, set in `.prettierrc.json5`, and the files it leaves alone are listed in `.prettierignore`; [Workspace](workspace.md#two-formatters) says why Prettier, not oxfmt, owns Markdown.
+
+## Setup
+
+```sh
+nvm use
+pnpm install
+```
+
+`.nvmrc` pins Node.js, which `nvm use` reads, and the `packageManager` field in `package.json` pins pnpm, which pnpm installs before it runs. [Workspace](workspace.md#toolchain) covers why the versions are pinned where they are.
+
+`pnpm install` runs the root `prepare` script, which points git at `.githooks/` through `core.hooksPath`. If lifecycle scripts were disabled during the install, run `git config core.hooksPath .githooks`.
 
 ## Scripts
 
@@ -24,16 +37,16 @@ Every script runs from the repository root. There is no workspace CLI: the scrip
 | `pnpm test:coverage` | `vitest run --coverage`, with a V8 coverage report in `coverage/`.                          |
 | `pnpm build`         | `pnpm -r --if-present run build`. A package without a `build` script is skipped.            |
 | `pnpm verify`        | The checks above in the order [Workspace](workspace.md#root-scripts) gives.                 |
-| `pnpm prepare`       | `node .githooks/install.mjs`.                                                               |
+| `pnpm prepare`       | `git config core.hooksPath .githooks`, reporting rather than failing when git cannot.       |
 
 ## TypeScript and Vitest
 
-| File                 | Configures                                                                                                                                                                                                                                                                                                                                                              |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `tsconfig.base.json` | The compiler settings every project shares: strict, `noUncheckedIndexedAccess`, `verbatimModuleSyntax`, bundler resolution, and type-checking only (`noEmit`).                                                                                                                                                                                                          |
-| `tsconfig.json`      | The solution `tsc -b` builds. It lists projects and holds no files.                                                                                                                                                                                                                                                                                                     |
-| `tsconfig.root.json` | The project for code outside the packages: root config files such as `vitest.config.ts`, `scripts/`, and the `.mjs` scripts in `.githooks/`, checked against their JSDoc types with `checkJs`. Node.js runs these directly, so it checks them by Node's rules: Node.js types, NodeNext resolution, and relative imports with the file's own extension, `.ts` or `.mjs`. |
-| `vitest.config.ts`   | The Vitest projects: the root project for `scripts/`, and every package and app with a `vitest.config.ts`.                                                                                                                                                                                                                                                              |
+| File                 | Configures                                                                                                                                                                                                                                                                        |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tsconfig.base.json` | The compiler settings every project shares: strict, `noUncheckedIndexedAccess`, `verbatimModuleSyntax`, bundler resolution, and type-checking only (`noEmit`).                                                                                                                    |
+| `tsconfig.json`      | The solution `tsc -b` builds. It lists projects and holds no files.                                                                                                                                                                                                               |
+| `tsconfig.root.json` | The project for code outside the packages: root config files such as `vitest.config.ts`, and `scripts/`. Node.js runs these directly, so it checks them by Node's rules: Node.js types, NodeNext resolution, and relative imports with the file's own extension, `.ts` or `.mjs`. |
+| `vitest.config.ts`   | The Vitest projects: the root project for `scripts/`, and every package and app with a `vitest.config.ts`.                                                                                                                                                                        |
 
 ### The empty workspace
 

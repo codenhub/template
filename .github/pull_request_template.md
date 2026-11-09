@@ -6,10 +6,10 @@ Fixes #
 
 ## Checks
 
-- [ ] The delivery gate `CONTRIBUTING.md` names passes, `pnpm verify` by default, or the skipped steps are listed here
+- [ ] The delivery gate `CONTRIBUTING.md` names passes, `{{verify}}` by default, or the skipped steps are listed here
 - [ ] Documentation affected by behavior, API, or convention changes is updated in this pull request
 
-<!-- Checks only this project needs, as checklist items, such as a generated file regenerated or a suite `pnpm verify` does not run. -->
+<!-- Checks only this project needs, as checklist items, such as a generated file regenerated or a suite `{{verify}}` does not run. -->
 
 ## Security
 
