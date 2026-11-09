@@ -38,9 +38,9 @@ Rejected alternatives:
 
 The repository root is a stack-neutral core: the process, the agent instructions, the hooks, and the documentation that holds in any language. Each directory under `profiles/` holds one stack's files, at the paths they take in a project. Creating a project lays one profile over the core.
 
-| Profile     | `{{setup}}`                    | `{{verify}}`  |
-| ----------- | ------------------------------ | ------------- |
-| `node-pnpm` | `nvm use`, then `pnpm install` | `pnpm verify` |
+| Profile     | `{{setup}}`                        | `{{verify}}`  |
+| ----------- | ---------------------------------- | ------------- |
+| `node-pnpm` | `nvm install`, then `pnpm install` | `pnpm verify` |
 
 Rejected: **one template repository per stack.** Each would be simpler alone, but every change to the process, the agent instructions, or the documentation guidelines would be repeated in each repository, and they would drift apart. Keeping the core in one place is the reason to split at all.
 
@@ -75,7 +75,7 @@ Rejected: **merging a core part and a profile part,** such as a core `.gitignore
 
 ### All hooks are `sh`, with commands the profile declares
 
-`commit-msg` and `pre-push` are plain `sh` and stack-neutral. `pre-commit` is a stack-neutral `sh` dispatcher: it handles staged and partly staged files, and sources `.githooks/profile.sh`, which the profile provides. That file sets `PROFILE_EXTENSIONS`, the extensions any of its checks reads, and `PROFILE_FIX_HINT`, the commands that fix what they report, and defines `profile_fix` and `profile_check`, which take a list of files and usually call `on_ext`, a helper the hook provides that runs a command over the files with matching extensions. Without `profile.sh`, as at this repository's root, the hook runs no checks and says so. Setup points git at the hooks with `git config core.hooksPath .githooks`, which `node-pnpm` runs from `pnpm prepare`.
+`commit-msg` and `pre-push` are plain `sh` and stack-neutral. `pre-commit` is a stack-neutral `sh` dispatcher: it handles staged and partly staged files, and sources `.githooks/profile.sh`, which the profile provides. That file sets `PROFILE_EXTENSIONS`, a `grep -E` pattern for the extensions any of its checks reads, and `PROFILE_FIX_HINT`, the commands that fix what they report, and defines `profile_fix` and `profile_check`, which take a list of files and usually call `on_ext`, a helper the hook provides that runs a command over the files with matching extensions. Without `profile.sh`, as at this repository's root, the hook runs no checks and says so. Setup points git at the hooks with `git config core.hooksPath .githooks`, which `node-pnpm` runs from `pnpm prepare`.
 
 Rejected: **hooks per profile,** keeping a Node `pre-commit` in `node-pnpm` and writing another for each stack. The staged-file handling is the hard part of the hook, with its own traps in `.githooks/AGENTS.md`, and it would be copied into every profile.
 
@@ -93,9 +93,15 @@ The first profile was extracted from what the template was before the split, so 
 
 Rejected: **a second profile now,** to prove the core is neutral. A profile nobody uses is a profile nobody verifies; it would look supported and be wrong in ways only its first user finds.
 
-### Open questions
+### The label list is a `sh` script
 
-- **The label sync command.** `CONTRIBUTING.md` creates the labels with `node -e`, which a project without Node.js cannot run. Candidates: a `sh` loop over `gh label create` that needs `jq`, or the command as a profile value.
+`.github/labels.sh` lists the labels, one `label` line each, and creates or updates them through `gh` when run. It needs only `gh` and the `sh` that git ships on every platform, which on Windows is reachable from PowerShell or `cmd` through a git alias, as `CONTRIBUTING.md` shows; the hooks rely on the same `sh`.
+
+Rejected: **a JSON list read by `node -e`,** the earlier design. A project without Node.js could not run it.
+
+Rejected: **a JSON list read by a `sh` loop through `jq`.** `jq` is not installed by default on Windows or on many Linux systems.
+
+Rejected: **the command as a profile value.** Each profile would carry its own command for a list that holds the same labels in every stack.
 
 ## Creating a project
 
@@ -110,22 +116,24 @@ Rejected: **a second profile now,** to prove the core is neutral. A profile nobo
 
 3. Replace every placeholder:
 
-   | Placeholder       | Replaced with                                         | Example              |
-   | ----------------- | ----------------------------------------------------- | -------------------- |
-   | `{{name}}`        | The project's display name.                           | `Acme Notes`         |
-   | `{{slug}}`        | The repository and root package name.                 | `acme-notes`         |
-   | `{{description}}` | One sentence saying what the project is.              | `A note-taking app.` |
-   | `{{owner}}`       | The GitHub owner, a user or organization.             | `acme`               |
-   | `{{holder}}`      | The copyright holder.                                 | `Acme`               |
-   | `{{year}}`        | The year the project was created.                     | `2026`               |
-   | `{{setup}}`       | The profile's setup commands, one per line.           | From the table above |
-   | `{{verify}}`      | The profile's delivery gate.                          | From the table above |
+   | Placeholder       | Replaced with                               | Example              |
+   | ----------------- | ------------------------------------------- | -------------------- |
+   | `{{name}}`        | The project's display name.                 | `Acme Notes`         |
+   | `{{slug}}`        | The repository and root package name.       | `acme-notes`         |
+   | `{{description}}` | One sentence saying what the project is.    | `A note-taking app.` |
+   | `{{owner}}`       | The GitHub owner, a user or organization.   | `acme`               |
+   | `{{holder}}`      | The copyright holder.                       | `Acme`               |
+   | `{{year}}`        | The year the project was created.           | `2026`               |
+   | `{{setup}}`       | The profile's setup commands, one per line. | From the table above |
+   | `{{verify}}`      | The profile's delivery gate.                | From the table above |
 
 4. Check that no placeholder is left; this prints nothing when none is, and searches files not yet added to git too:
 
    ```sh
-   git grep --untracked -nE '\{\{(name|slug|description|owner|holder|year|setup|verify)\}\}'
+   git grep --untracked -nE '(^|[^$])\{\{[a-z0-9_]+\}\}'
    ```
+
+   It matches any placeholder, including one a document uses that the table above misses, and not a GitHub Actions expression, which starts with `$`, such as `${{ github.ref }}` or `${{true}}`.
 
 5. Run the setup commands and the gate.
 
@@ -177,7 +185,7 @@ git grep -nE 'project:(start|end)|\.template/'
 dir="$(mktemp -d)/check" && git clone --quiet . "$dir" && cd "$dir"
 rm .github/workflows/template.yml .github/dependabot.yml
 cp -R profiles/node-pnpm/. . && rm -r profiles
-nvm use && pnpm install && pnpm verify
+nvm install && pnpm install && pnpm verify
 ```
 
 The clone holds what is committed, so commit first, on a branch.
