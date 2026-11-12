@@ -1,6 +1,6 @@
 ---
 status: IMPLEMENTED
-last_updated: 2026-11-08
+last_updated: 2026-11-12
 scope: Index of the project documentation.
 ---
 
@@ -11,25 +11,25 @@ scope: Index of the project documentation.
 Every document in `docs/` is listed here. Adding, moving, or deleting one updates this index in the same change.
 
 <!--
-Where a newcomer should start, and the project's overview documents, for example:
+The project's overview documents, for example:
 
 ## Overview
 
 | Document                        | Contains                                    |
 | ------------------------------- | ------------------------------------------- |
-| [Architecture](architecture.md) | What goes where and why. Start here.        |
+| [Architecture](architecture.md) | What goes where and why.                    |
 | [Roadmap](roadmap.md)           | Current focus, what is planned, what is not. |
 -->
 
 ## Guidelines
 
-| Document                                     | Contains                                                                                         |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| [Brand](guidelines/brand.md)                 | The name, the voice, and the visual identity, and why each was chosen.                           |
-| [Code](guidelines/code.md)                   | Naming, design, errors, inputs and state, testing practices, and documentation in code.          |
-| [Documentation](guidelines/documentation.md) | Metadata, prompts, status and authority, recording decisions, exceptions, layout, and the voice. |
-| [Stack](guidelines/stack.md)                 | The conventions of the project's languages and the tools that check them.                        |
-| [Security](guidelines/security.md)           | Secrets, untrusted input, what stays out of logs, and reviewing a change.                        |
+| Document                                     | Contains                                                                                                         |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| [Brand](guidelines/brand.md)                 | The name, the voice, and the visual identity, and why each was chosen.                                           |
+| [Code](guidelines/code.md)                   | Naming, design, errors, inputs and state, testing practices, and documentation in code.                          |
+| [Documentation](guidelines/documentation.md) | Metadata, prompts, status and authority, recording decisions, exceptions, document roles, layout, and the voice. |
+| [Stack](guidelines/stack.md)                 | The conventions of the project's languages and the tools that check them.                                        |
+| [Security](guidelines/security.md)           | Secrets, untrusted input, what stays out of logs, and reviewing a change.                                        |
 
 <!-- The project's own guidelines, as rows of the table above. Delete the Brand row when the project has no brand guidelines or keeps them elsewhere. -->
 
