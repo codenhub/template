@@ -26,7 +26,7 @@ This document is the workspace's contract: the names of the root scripts and wha
 
 `pnpm verify` is what CI runs ([CI](ci.md)), so a green local `verify` predicts a green run. The order puts the cheapest checks first, so a formatting slip is reported in a second instead of after the tests. The build comes before type checking and tests because a package that imports another workspace package resolves it through that package's `exports`, which for a built package point at `dist/`: on a fresh clone, as in CI, a type check or a test run before the build cannot resolve the import and fails.
 
-Keep these names as they are: CI, the git hooks and the agent instructions call them by name. A script that only some projects need, such as `dev` or an end-to-end suite, is the project's to add.
+Keep these names as they are: CI, the git hooks and the agent instructions call them by name. There is no plain `format` script on purpose: when a name matches no script, pnpm runs the program of that name from `PATH` instead, and on Windows `format` is the system disk formatter. The explicit `format:check` and `format:fix` names avoid that. A script that only some projects need, such as `dev` or an end-to-end suite, is the project's to add.
 
 <!-- The project's own root scripts, as a table with the same columns, such as `dev`, `test:browser`, or a generator, and the checks `pnpm verify` runs after `test`. -->
 
