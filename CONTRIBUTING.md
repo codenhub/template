@@ -27,7 +27,7 @@ Setup also points git at `.githooks/` through `core.hooksPath`, so the hooks des
 
 ## Issues
 
-Defects and requests are tracked as GitHub issues, opened through the bug and feature forms. A vulnerability is the exception: report it privately as [`SECURITY.md`](SECURITY.md) describes.
+Defects and requests are tracked as GitHub issues, opened through the bug and feature forms. A vulnerability is the exception: report it as [`SECURITY.md`](SECURITY.md) describes.
 
 Each issue carries one label from each group that applies:
 
