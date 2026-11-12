@@ -1,6 +1,6 @@
 ---
 status: IMPLEMENTED
-last_updated: 2026-11-09
+last_updated: 2026-11-12
 scope: The root script names and what each guarantees, the shared tool configurations, the pinned toolchain, install rules, and how dependency versions are declared.
 ---
 
@@ -26,7 +26,7 @@ This document is the workspace's contract: the names of the root scripts and wha
 
 `pnpm verify` is what CI runs ([CI](ci.md)), so a green local `verify` predicts a green run. The order puts the cheapest checks first, so a formatting slip is reported in a second instead of after the tests. The build comes before type checking and tests because a package that imports another workspace package resolves it through that package's `exports`, which for a built package point at `dist/`: on a fresh clone, as in CI, a type check or a test run before the build cannot resolve the import and fails.
 
-Keep these names as they are: CI, the git hooks and the agent instructions call them by name. A script that only some projects need, such as `dev` or an end-to-end suite, is the project's to add.
+Keep these names as they are: CI, the git hooks and the agent instructions call them by name. There is no plain `format` script on purpose: when a name matches no script, pnpm runs the program of that name from `PATH` instead, and on Windows `format` is the system disk formatter. The explicit `format:check` and `format:fix` names avoid that. A script that only some projects need, such as `dev` or an end-to-end suite, is the project's to add.
 
 <!-- The project's own root scripts, as a table with the same columns, such as `dev`, `test:browser`, or a generator, and the checks `pnpm verify` runs after `test`. -->
 
@@ -83,7 +83,7 @@ CI reads those same files rather than repeating a version: `pnpm/action-setup` t
 - `trustPolicy: no-downgrade` refuses a version whose publish-time trust evidence, such as provenance or trusted publishing, is weaker than that of an earlier version of the same package. A release that drops its provenance is a common sign of a compromised publish.
 - `trustPolicyIgnoreAfter: 10080` is an age in minutes, seven days, after which a version is no longer held to the trust policy. It stops a long-published version that predates provenance from being refused as a downgrade, while a fresh release, the one a compromise would be, is still checked. When one recent version must be let through, `trustPolicyExclude` names that exact version, with the reason in a comment and the condition for removing it.
 - `allowBuilds` lists the only dependencies whose install scripts run. It starts empty: the workspace's own tools ship their native binaries as optional dependencies and need none. A dependency that needs one, such as `esbuild`, gets an entry in the same change, with the reason.
-- pnpm's default `minimumReleaseAge` holds back a version published less than a day ago, so a compromised release is usually caught and pulled before it can be installed here. A version needed sooner goes in `minimumReleaseAgeExclude`, by exact version, and leaves it once it is old enough.
+- pnpm's default `minimumReleaseAge` prefers a version published at least a day ago, so a compromised release is usually caught and pulled before it is chosen here. It is not a hard gate: the workspace does not set `minimumReleaseAge`, so pnpm's default non-strict mode applies, and when the only version that matches a range or an exact pin is younger than a day, pnpm installs it anyway. Setting `minimumReleaseAge` explicitly, in `pnpm-workspace.yaml` or in a contributor's own pnpm configuration, makes it strict, so such an install fails instead; a version needed sooner then goes in `minimumReleaseAgeExclude`, by exact version, and leaves it once it is old enough.
 
 ## Git hooks
 
