@@ -107,6 +107,23 @@ else
 fi
 reset
 
+# Over 8191 characters of file names, the command-line limit of `cmd.exe`, which runs `pnpm.cmd` on Windows.
+mkdir batch
+i=0
+while [ "$i" -lt 200 ]; do
+  printf 'export const a = {b:1}\n' >"batch/a-file-name-long-enough-to-fill-the-command-line-$i.ts"
+  i=$((i + 1))
+done
+git add batch
+if commit -m "test: many files" &&
+  [ "$(git show HEAD:batch/a-file-name-long-enough-to-fill-the-command-line-0.ts)" = 'export const a = { b: 1 };' ] &&
+  ! git grep -q -F '{b:1}' HEAD -- batch; then
+  pass "pre-commit formats more staged files than one Windows command line holds"
+else
+  fail "pre-commit formats more staged files than one Windows command line holds"
+fi
+reset
+
 # commit-msg, run directly on a message file
 
 message() {
