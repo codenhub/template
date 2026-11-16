@@ -117,7 +117,7 @@ done
 git add batch
 if commit -m "test: many files" &&
   [ "$(git show HEAD:batch/a-file-name-long-enough-to-fill-the-command-line-0.ts)" = 'export const a = { b: 1 };' ] &&
-  [ "$(git show HEAD:batch/a-file-name-long-enough-to-fill-the-command-line-199.ts)" = 'export const a = { b: 1 };' ]; then
+  ! git grep -q -F '{b:1}' HEAD -- batch; then
   pass "pre-commit formats more staged files than one Windows command line holds"
 else
   fail "pre-commit formats more staged files than one Windows command line holds"
