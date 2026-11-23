@@ -19,6 +19,7 @@ Setup also points git at `.githooks/` through `core.hooksPath`, so the hooks des
 ## Changes
 
 - Keep each change within its requested scope and preserve unrelated work.
+- Every edit in a change answers the request or a finding the maintainer approved. A rename, a removal, a new option, or a rewording that neither needs stays out, however much better it looks; propose it on its own. "Change nothing" is a valid outcome for a finding, and often the right one when no realistic case shows a user hitting it.
 - Applicable guidelines, specifications, and APPROVED or IMPLEMENTED documentation govern the change. Existing code may lag those contracts; conflicts and exceptions are resolved under the [documentation guidelines](docs/guidelines/documentation.md).
 - Update affected documentation in the same change as behavior, public API, exports, conventions, or decisions. Each contract has one owning document; references point to that owner rather than repeat its requirements.
 - Do not commit secrets, `.env` files, build artifacts, or unrelated changes.
@@ -176,6 +177,12 @@ Every change reaches `main` through a pull request, and CI verifies it.
 Pushing a branch and opening a pull request are outward-facing actions. An agent asks first and does neither on its own initiative.
 
 Keep a pull request to one subject. A branch that fixes a bug and also restructures a doc is two pull requests, for the same reason a commit that does both is two commits.
+
+A subject is what a reviewer can approve in one decision. A change to a repository-wide rule, such as a guideline, a specification, or the root `AGENTS.md`, is its own pull request, even when one task produced it along with the work it governs. It merges before the work that follows it, so the rule is reviewed as a rule and not as a side effect of a fix.
+
+Fix a defect where it happens, not where its effects are felt, and cover every case the same cause produces there. A fix at the cause holds; a patch where the effect shows has to be repeated in each place that feels it, and breaks again when the cause moves.
+
+A pull request description says what the change does for someone using what the project ships or working in the repository, in plain words, and why, so a reviewer who saw none of the work behind it can judge it. When it asks the maintainer to decide something, it gives the options, what each costs, with "change nothing" among them when it is viable, and a recommendation.
 
 A pull request that resolves an issue says `Fixes #123` in its description, so merging it closes the issue. Merging is not releasing: a fix reaches users with the next release.
 
